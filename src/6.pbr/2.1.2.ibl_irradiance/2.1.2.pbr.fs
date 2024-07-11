@@ -115,7 +115,7 @@ void main()
     vec3 kD = 1.0 - kS;
     kD *= 1.0 - metallic;	  
     vec3 irradiance = texture(irradianceMap, N).rgb;
-    vec3 diffuse      = irradiance * albedo;
+    vec3 diffuse      = irradiance * albedo;// 这里diffus是radiance值，是与观察方向无关的，diffuse材质的作用是将dA上搜集到的irradiance向半球面上各个方向均匀散射
     vec3 ambient = (kD * diffuse) * ao;
     // vec3 ambient = vec3(0.002);
     
@@ -123,6 +123,7 @@ void main()
 
     // HDR tonemapping
     color = color / (color + vec3(1.0));
+    
     // gamma correct
     color = pow(color, vec3(1.0/2.2)); 
 

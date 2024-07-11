@@ -4,6 +4,7 @@ in vec3 WorldPos;
 
 uniform sampler2D equirectangularMap;
 
+// 柱状纹理转换为cubemap
 const vec2 invAtan = vec2(0.1591, 0.3183);
 vec2 SampleSphericalMap(vec3 v)
 {

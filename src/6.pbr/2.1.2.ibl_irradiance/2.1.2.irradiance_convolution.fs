@@ -6,6 +6,7 @@ uniform samplerCube environmentMap;
 
 const float PI = 3.14159265359;
 
+// 对环境贴图进行卷积计算，得到环境光贴图
 void main()
 {		
 	// The world vector acts as the normal of a tangent surface
@@ -13,6 +14,8 @@ void main()
     // incoming radiance of the environment. The result of this radiance
     // is the radiance of light coming from -Normal direction, which is what
     // we use in the PBR shader to sample irradiance.
+
+    // WorldPos是球体局部坐标空间上的点的坐标
     vec3 N = normalize(WorldPos);
 
     vec3 irradiance = vec3(0.0);   
@@ -26,13 +29,18 @@ void main()
     float nrSamples = 0.0;
     for(float phi = 0.0; phi < 2.0 * PI; phi += sampleDelta)
     {
+        // 半球面theta
         for(float theta = 0.0; theta < 0.5 * PI; theta += sampleDelta)
         {
             // spherical to cartesian (in tangent space)
+            // 球面坐标转换为笛卡尔坐标
             vec3 tangentSample = vec3(sin(theta) * cos(phi),  sin(theta) * sin(phi), cos(theta));
+            
             // tangent space to world
+            // 切线空间的半球面 转换到 世界空间的半球面
             vec3 sampleVec = tangentSample.x * right + tangentSample.y * up + tangentSample.z * N; 
 
+            // 累加求和 Lo*cos*sin
             irradiance += texture(environmentMap, sampleVec).rgb * cos(theta) * sin(theta);
             nrSamples++;
         }

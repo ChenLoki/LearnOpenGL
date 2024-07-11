@@ -6,6 +6,7 @@ uniform mat4 view;
 
 out vec3 WorldPos;
 
+// 天空盒
 void main()
 {
     WorldPos = aPos;

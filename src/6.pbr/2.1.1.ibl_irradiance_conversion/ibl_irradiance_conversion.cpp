@@ -95,21 +95,19 @@ int main()
 
     // lights
     // ------
-    glm::vec3 lightPositions[] = {
-        glm::vec3(-10.0f,  10.0f, 10.0f),
-        glm::vec3( 10.0f,  10.0f, 10.0f),
-        glm::vec3(-10.0f, -10.0f, 10.0f),
-        glm::vec3( 10.0f, -10.0f, 10.0f),
-    };
-    glm::vec3 lightColors[] = {
-        glm::vec3(300.0f, 300.0f, 300.0f),
-        glm::vec3(300.0f, 300.0f, 300.0f),
-        glm::vec3(300.0f, 300.0f, 300.0f),
-        glm::vec3(300.0f, 300.0f, 300.0f)
-    };
-    int nrRows = 7;
-    int nrColumns = 7;
-    float spacing = 2.5;
+    glm::vec3 lightPositions[] = {  glm::vec3(-10.0f,  10.0f, 10.0f),
+                                    glm::vec3( 10.0f,  10.0f, 10.0f),
+                                    glm::vec3(-10.0f, -10.0f, 10.0f),
+                                    glm::vec3( 10.0f, -10.0f, 10.0f)};
+    
+    glm::vec3 lightColors[] = { glm::vec3(300.0f, 300.0f, 300.0f),
+                                glm::vec3(300.0f, 300.0f, 300.0f),
+                                glm::vec3(300.0f, 300.0f, 300.0f),
+                                glm::vec3(300.0f, 300.0f, 300.0f)};
+    
+    int nrRows      = 7;
+    int nrColumns   = 7;
+    float spacing   = 2.5;
 
     // pbr: setup framebuffer
     // ----------------------
@@ -246,11 +244,9 @@ int main()
                 pbrShader.setFloat("roughness", glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f));
 
                 model = glm::mat4(1.0f);
-                model = glm::translate(model, glm::vec3(
-                    (float)(col - (nrColumns / 2)) * spacing,
-                    (float)(row - (nrRows / 2)) * spacing,
-                    -2.0f
-                ));
+                model = glm::translate(model, glm::vec3((float)(col - (nrColumns / 2)) * spacing,
+                                                        (float)(row - (nrRows / 2)) * spacing,
+                                                        -2.0f));
                 pbrShader.setMat4("model", model);
                 pbrShader.setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
                 renderSphere();
@@ -309,14 +305,10 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)camera.ProcessKeyboard(FORWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)camera.ProcessKeyboard(BACKWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)camera.ProcessKeyboard(LEFT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes

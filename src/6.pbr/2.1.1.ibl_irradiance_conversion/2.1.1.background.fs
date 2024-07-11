@@ -4,6 +4,7 @@ in vec3 WorldPos;
 
 uniform samplerCube environmentMap;
 
+// 天空盒/环境光
 void main()
 {		
     vec3 envColor = texture(environmentMap, WorldPos).rgb;

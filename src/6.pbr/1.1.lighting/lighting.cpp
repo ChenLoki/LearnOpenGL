@@ -87,18 +87,16 @@ int main()
 
     // lights
     // ------
-    glm::vec3 lightPositions[] = {
-        glm::vec3(-10.0f,  10.0f, 10.0f),
-        glm::vec3( 10.0f,  10.0f, 10.0f),
-        glm::vec3(-10.0f, -10.0f, 10.0f),
-        glm::vec3( 10.0f, -10.0f, 10.0f),
-    };
-    glm::vec3 lightColors[] = {
-        glm::vec3(300.0f, 300.0f, 300.0f),
-        glm::vec3(300.0f, 300.0f, 300.0f),
-        glm::vec3(300.0f, 300.0f, 300.0f),
-        glm::vec3(300.0f, 300.0f, 300.0f)
-    };
+    glm::vec3 lightPositions[] = {  glm::vec3(-10.0f,  10.0f, 10.0f),
+                                    glm::vec3( 10.0f,  10.0f, 10.0f),
+                                    glm::vec3(-10.0f, -10.0f, 10.0f),
+                                    glm::vec3( 10.0f, -10.0f, 10.0f)};
+    
+    glm::vec3 lightColors[] = { glm::vec3(300.0f, 300.0f, 300.0f),
+                                glm::vec3(300.0f, 300.0f, 300.0f),
+                                glm::vec3(300.0f, 300.0f, 300.0f),
+                                glm::vec3(300.0f, 300.0f, 300.0f)};
+        
     int nrRows    = 7;
     int nrColumns = 7;
     float spacing = 2.5;
@@ -148,8 +146,8 @@ int main()
                 model = glm::translate(model, glm::vec3(
                     (col - (nrColumns / 2)) * spacing, 
                     (row - (nrRows / 2)) * spacing, 
-                    0.0f
-                ));
+                    0.0f));
+                
                 shader.setMat4("model", model);
                 shader.setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
                 renderSphere();
