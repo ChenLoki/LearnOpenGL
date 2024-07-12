@@ -9,7 +9,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
 // settings
-const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_WIDTH  = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 int main()
@@ -47,7 +47,8 @@ int main()
 
     // build and compile our shader program
     // ------------------------------------
-    Shader ourShader("3.3.shader.vs", "3.3.shader.fs"); // you can name your shader files however you like
+    Shader ourShader("/Users/chen/Documents/LearnOpenGL/src/1.getting_started/3.3.shaders_class/3.3.shader.vert",
+                     "/Users/chen/Documents/LearnOpenGL/src/1.getting_started/3.3.shaders_class/3.3.shader.frag"); // you can name your shader files however you like
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

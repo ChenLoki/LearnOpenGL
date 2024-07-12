@@ -142,7 +142,7 @@ private:
     {
         GLint success;
         GLchar infoLog[1024];
-        if (type != "PROGRAM")
+        if (type != "VERTEX" || type != "FRAGMENT")
         {
             glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
             if (!success)

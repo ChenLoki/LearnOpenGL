@@ -77,8 +77,8 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader lightingShader("1.colors.vs", "1.colors.fs");
-    Shader lightCubeShader("1.light_cube.vs", "1.light_cube.fs");
+    Shader lightingShader("/Users/chen/Documents/LearnOpenGL/src/2.lighting/1.colors/1.colors.vert", "/Users/chen/Documents/LearnOpenGL/src/2.lighting/1.colors/1.colors.frag");
+    Shader lightCubeShader("/Users/chen/Documents/LearnOpenGL/src/2.lighting/1.colors/1.light_cube.vert", "/Users/chen/Documents/LearnOpenGL/src/2.lighting/1.colors/1.light_cube.frag");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -228,14 +228,10 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)camera.ProcessKeyboard(FORWARD,    deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)camera.ProcessKeyboard(BACKWARD,   deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)camera.ProcessKeyboard(LEFT,       deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)camera.ProcessKeyboard(RIGHT,      deltaTime);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
