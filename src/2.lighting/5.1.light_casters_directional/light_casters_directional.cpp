@@ -76,8 +76,10 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader lightingShader("5.1.light_casters.vs", "5.1.light_casters.fs");
-    Shader lightCubeShader("5.1.light_cube.vs", "5.1.light_cube.fs");
+    Shader lightingShader( "/Users/chen/Documents/LearnOpenGL/src/2.lighting/5.1.light_casters_directional/5.1.light_casters.vert",
+                           "/Users/chen/Documents/LearnOpenGL/src/2.lighting/5.1.light_casters_directional/5.1.light_casters.frag");
+    Shader lightCubeShader("/Users/chen/Documents/LearnOpenGL/src/2.lighting/5.1.light_casters_directional/5.1.light_cube.vert",
+                           "/Users/chen/Documents/LearnOpenGL/src/2.lighting/5.1.light_casters_directional/5.1.light_cube.frag");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

@@ -53,7 +53,8 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader ourShader("4.5.texture.vs", "4.5.texture.fs");
+    Shader ourShader("/Users/chen/Documents/LearnOpenGL/src/1.getting_started/4.6.textures_exercise4/4.5.texture.vert",
+                     "/Users/chen/Documents/LearnOpenGL/src/1.getting_started/4.6.textures_exercise4/4.5.texture.frag");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

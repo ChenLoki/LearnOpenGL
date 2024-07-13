@@ -79,8 +79,10 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader lightingShader("4.4.lighting_maps.vs", "4.4.lighting_maps.fs");
-    Shader lightCubeShader("4.4.light_cube.vs", "4.4.light_cube.fs");
+    Shader lightingShader( "/Users/chen/Documents/LearnOpenGL/src/2.lighting/4.4.lighting_maps_exercise4/4.4.lighting_maps.vert",
+                           "/Users/chen/Documents/LearnOpenGL/src/2.lighting/4.4.lighting_maps_exercise4/4.4.lighting_maps.frag");
+    Shader lightCubeShader("/Users/chen/Documents/LearnOpenGL/src/2.lighting/4.4.lighting_maps_exercise4/4.4.light_cube.vert",
+                           "/Users/chen/Documents/LearnOpenGL/src/2.lighting/4.4.lighting_maps_exercise4/4.4.light_cube.frag");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

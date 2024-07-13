@@ -77,8 +77,10 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader lightingShader("2.2.basic_lighting.vs", "2.2.basic_lighting.fs");
-    Shader lightCubeShader("2.2.light_cube.vs", "2.2.light_cube.fs");
+    Shader lightingShader( "/Users/chen/Documents/LearnOpenGL/src/2.lighting/2.2.basic_lighting_specular/2.2.basic_lighting.vert",
+                           "/Users/chen/Documents/LearnOpenGL/src/2.lighting/2.2.basic_lighting_specular/2.2.basic_lighting.frag");
+    Shader lightCubeShader("/Users/chen/Documents/LearnOpenGL/src/2.lighting/2.2.basic_lighting_specular/2.2.light_cube.vert",
+                           "/Users/chen/Documents/LearnOpenGL/src/2.lighting/2.2.basic_lighting_specular/2.2.light_cube.frag");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

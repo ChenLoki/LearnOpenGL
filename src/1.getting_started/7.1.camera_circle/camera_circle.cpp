@@ -57,7 +57,8 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader ourShader("7.1.camera.vs", "7.1.camera.fs");
+    Shader ourShader("/Users/chen/Documents/LearnOpenGL/src/1.getting_started/7.1.camera_circle/7.1.camera.vert",
+                     "/Users/chen/Documents/LearnOpenGL/src/1.getting_started/7.1.camera_circle/7.1.camera.frag");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -188,7 +189,7 @@ int main()
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
     ourShader.use();
-    ourShader.setInt("texture1", 0);
+    ourShader.setInt("texture1", 0);// 采样器1在0号纹理单元上采样
     ourShader.setInt("texture2", 1);
 
     // pass projection matrix to shader (as projection matrix rarely changes there's no need to do this per frame)

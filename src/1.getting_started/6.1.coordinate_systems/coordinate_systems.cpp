@@ -53,7 +53,8 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader ourShader("6.1.coordinate_systems.vs", "6.1.coordinate_systems.fs");
+    Shader ourShader("/Users/chen/Documents/LearnOpenGL/src/1.getting_started/6.1.coordinate_systems/6.1.coordinate_systems.vert",
+                     "/Users/chen/Documents/LearnOpenGL/src/1.getting_started/6.1.coordinate_systems/6.1.coordinate_systems.frag");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

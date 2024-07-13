@@ -16,7 +16,7 @@ const char *vertexShaderSource ="#version 330 core\n"
     "out vec3 ourColor;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = vec4(aPos, 1.0);\n"
+//    "   gl_Position = vec4(vec3(aPos.x , -aPos.y , aPos.z), 1.0);\n"
     "   ourColor = aColor;\n"
     "}\0";
 
@@ -121,6 +121,12 @@ int main()
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // position attribute
+    // 0 对应在顶点着色器中的location
+    // 3 这个数据的长度是3
+    // 类型是GL_FLOAT
+    // 不归一化
+    // 下一个数据是在6 * sizeof(float)之后
+    // 在数组中的起始偏移为(void*)0
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     // color attribute

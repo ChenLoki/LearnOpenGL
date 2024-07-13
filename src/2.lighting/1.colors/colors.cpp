@@ -77,8 +77,10 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader lightingShader("/Users/chen/Documents/LearnOpenGL/src/2.lighting/1.colors/1.colors.vert", "/Users/chen/Documents/LearnOpenGL/src/2.lighting/1.colors/1.colors.frag");
-    Shader lightCubeShader("/Users/chen/Documents/LearnOpenGL/src/2.lighting/1.colors/1.light_cube.vert", "/Users/chen/Documents/LearnOpenGL/src/2.lighting/1.colors/1.light_cube.frag");
+    Shader lightingShader("/Users/chen/Documents/LearnOpenGL/src/2.lighting/1.colors/1.colors.vert",
+                          "/Users/chen/Documents/LearnOpenGL/src/2.lighting/1.colors/1.colors.frag");
+    Shader lightCubeShader("/Users/chen/Documents/LearnOpenGL/src/2.lighting/1.colors/1.light_cube.vert",
+                           "/Users/chen/Documents/LearnOpenGL/src/2.lighting/1.colors/1.light_cube.frag");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

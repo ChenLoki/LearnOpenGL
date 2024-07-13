@@ -75,7 +75,8 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader ourShader("7.4.camera.vs", "7.4.camera.fs");
+    Shader ourShader("/Users/chen/Documents/LearnOpenGL/src/1.getting_started/7.4.camera_class/7.4.camera.vert",
+                     "/Users/chen/Documents/LearnOpenGL/src/1.getting_started/7.4.camera_class/7.4.camera.frag");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

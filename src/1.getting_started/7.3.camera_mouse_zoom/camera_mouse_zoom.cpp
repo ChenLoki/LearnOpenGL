@@ -80,7 +80,8 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader ourShader("7.3.camera.vs", "7.3.camera.fs");
+    Shader ourShader("/Users/chen/Documents/LearnOpenGL/src/1.getting_started/7.3.camera_mouse_zoom/7.3.camera.vert",
+                     "/Users/chen/Documents/LearnOpenGL/src/1.getting_started/7.3.camera_mouse_zoom/7.3.camera.frag");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

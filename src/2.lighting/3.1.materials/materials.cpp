@@ -77,8 +77,10 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader lightingShader("3.1.materials.vs", "3.1.materials.fs");
-    Shader lightCubeShader("3.1.light_cube.vs", "3.1.light_cube.fs");
+    Shader lightingShader( "/Users/chen/Documents/LearnOpenGL/src/2.lighting/3.1.materials/3.1.materials.vert",
+                           "/Users/chen/Documents/LearnOpenGL/src/2.lighting/3.1.materials/3.1.materials.frag");
+    Shader lightCubeShader("/Users/chen/Documents/LearnOpenGL/src/2.lighting/3.1.materials/3.1.light_cube.vert",
+                           "/Users/chen/Documents/LearnOpenGL/src/2.lighting/3.1.materials/3.1.light_cube.frag");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -128,12 +130,11 @@ int main()
     // first, configure the cube's VAO (and VBO)
     unsigned int VBO, cubeVAO;
     glGenVertexArrays(1, &cubeVAO);
-    glGenBuffers(1, &VBO);
+    glBindVertexArray(cubeVAO);
 
+    glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindVertexArray(cubeVAO);
 
     // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);

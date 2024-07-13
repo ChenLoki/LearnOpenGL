@@ -1,17 +1,14 @@
-#ifndef MODEL_H
-#define MODEL_H
-
-#include <glad/glad.h> 
-
+#pragma once
+#include <glad/glad.h>                 //所有头文件
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+//#define STB_IMAGE_IMPLEMENTATION        //原作者没写
 #include <stb_image.h>
-#include <assimp/Importer.hpp>
+#include <assimp/Importer.hpp>        //assimp库头文件
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-
-#include <learnopengl/mesh.h>
-#include <learnopengl/shader.h>
+#include "/Users/chen/Documents/LearnOpenGL-master/LearnOpenGL-test/includes/learnopengl/mesh.h"
+#include "/Users/chen/Documents/LearnOpenGL-master/LearnOpenGL-test/includes/learnopengl/shader.h"
 
 #include <string>
 #include <fstream>
@@ -19,190 +16,214 @@
 #include <iostream>
 #include <map>
 #include <vector>
-using namespace std;
 
+using namespace std;
+//从文件中读取纹理
 unsigned int TextureFromFile(const char *path, const string &directory, bool gamma = false);
 
-class Model 
+//Model类
+// 相当于
+class Model
 {
 public:
-    // model data 
-    vector<Texture> textures_loaded;	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
-    vector<Mesh>    meshes;
+    vector<Texture> textures_loaded;// 保存一个model的所有的texture
+    vector<Mesh> meshes;// 每个mesh都有自己的Texture集合
     string directory;
     bool gammaCorrection;
 
-    // constructor, expects a filepath to a 3D model.
     Model(string const &path, bool gamma = false) : gammaCorrection(gamma)
     {
         loadModel(path);
     }
 
-    // draws the model, and thus all its meshes
-    void Draw(Shader &shader)
+    /// model的绘制是以mesh为单位进行的
+    void Draw(Shader shader)
     {
-        for(unsigned int i = 0; i < meshes.size(); i++)
+        for (unsigned int i = 0; i < meshes.size(); i++)
             meshes[i].Draw(shader);
     }
-    
+
 private:
-    // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
+    // 解析过的path也不应该再解析，加载过的模型不应该再加载
     void loadModel(string const &path)
     {
-        // read file via ASSIMP
         Assimp::Importer importer;
-        const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
-        // check for errors
-        if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
+        const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+
+        // 唯一根节点 scene->mRootNode
+        if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
-            cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << endl;
+            cout << "错误::ASSIMP:: " << importer.GetErrorString() << endl;
             return;
         }
-        // retrieve the directory path of the filepath
+
+        // 模型路径，不包含模型名
         directory = path.substr(0, path.find_last_of('/'));
 
-        // process ASSIMP's root node recursively
+        // 从Model的根节点开始解析
         processNode(scene->mRootNode, scene);
     }
 
-    // processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
+    // 递归解析节点
+    /// 解析model中所有的mesh
     void processNode(aiNode *node, const aiScene *scene)
     {
-        // process each mesh located at the current node
-        for(unsigned int i = 0; i < node->mNumMeshes; i++)
+        // 叶子节点：如果本节点有网格mesh，解析每一个mesh
+        for (unsigned int i = 0; i < node->mNumMeshes; i++)
         {
-            // the node object only contains indices to index the actual objects in the scene. 
-            // the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+//            auto name = mesh->mName;
             meshes.push_back(processMesh(mesh, scene));
         }
-        // after we've processed all of the meshes (if any) we then recursively process each of the children nodes
-        for(unsigned int i = 0; i < node->mNumChildren; i++)
+
+        // 如果本节点有子节点
+        for (unsigned int i = 0; i < node->mNumChildren; i++)
         {
             processNode(node->mChildren[i], scene);
         }
-
     }
 
+    // 解析一个mesh最后得到VBO EBO texture
+    // 解析mesh就是解析obj，副切线与切线是assimp计算得到的
     Mesh processMesh(aiMesh *mesh, const aiScene *scene)
     {
-        // data to fill
-        vector<Vertex> vertices;
-        vector<unsigned int> indices;
-        vector<Texture> textures;
+        // 要填写的数据
+        vector<Vertex>       vertices;// vertex
+        vector<unsigned int> indices; // EBO
+        vector<Texture>      textures;// texture
 
-        // walk through each of the mesh's vertices
-        for(unsigned int i = 0; i < mesh->mNumVertices; i++)
+        // 遍历mesh的每一个顶点
+        // VBO
+        for (unsigned int i = 0; i < mesh->mNumVertices; i++)
         {
             Vertex vertex;
-            glm::vec3 vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
-            // positions
+            glm::vec3 vector;
+
+            // v 顶点位置 pos
             vector.x = mesh->mVertices[i].x;
             vector.y = mesh->mVertices[i].y;
             vector.z = mesh->mVertices[i].z;
             vertex.Position = vector;
-            // normals
-            if (mesh->HasNormals())
-            {
-                vector.x = mesh->mNormals[i].x;
-                vector.y = mesh->mNormals[i].y;
-                vector.z = mesh->mNormals[i].z;
-                vertex.Normal = vector;
-            }
-            // texture coordinates
-            if(mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
+
+            // vt 顶点纹理
+            if (mesh->mTextureCoords[0])
             {
                 glm::vec2 vec;
-                // a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't 
-                // use models where a vertex can have multiple texture coordinates so we always take the first set (0).
-                vec.x = mesh->mTextureCoords[0][i].x; 
+                vec.x = mesh->mTextureCoords[0][i].x;
                 vec.y = mesh->mTextureCoords[0][i].y;
                 vertex.TexCoords = vec;
-                // tangent
-                vector.x = mesh->mTangents[i].x;
-                vector.y = mesh->mTangents[i].y;
-                vector.z = mesh->mTangents[i].z;
-                vertex.Tangent = vector;
-                // bitangent
-                vector.x = mesh->mBitangents[i].x;
-                vector.y = mesh->mBitangents[i].y;
-                vector.z = mesh->mBitangents[i].z;
-                vertex.Bitangent = vector;
             }
             else
                 vertex.TexCoords = glm::vec2(0.0f, 0.0f);
 
+
+            // vn 顶点法线
+            vector.x = mesh->mNormals[i].x;
+            vector.y = mesh->mNormals[i].y;
+            vector.z = mesh->mNormals[i].z;
+            vertex.Normal = vector;
+
+            // 切线副切线都是assimp根据模型数据计算出来的
+            // T
+            vector.x = mesh->mTangents[i].x;
+            vector.y = mesh->mTangents[i].y;
+            vector.z = mesh->mTangents[i].z;
+            vertex.Tangent = vector;
+
+            // B
+            vector.x = mesh->mBitangents[i].x;
+            vector.y = mesh->mBitangents[i].y;
+            vector.z = mesh->mBitangents[i].z;
+            vertex.Bitangent = vector;
+
+            // 一个条目的顶点数据 pos/tex/norm/tan/btan
             vertices.push_back(vertex);
         }
-        // now wak through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.
-        for(unsigned int i = 0; i < mesh->mNumFaces; i++)
+
+        // EBO
+        // obj文件中的一行f数据就是一个面
+        /// 遍历一个mesh中的所有的面
+        for (unsigned int i = 0; i < mesh->mNumFaces; i++)
         {
             aiFace face = mesh->mFaces[i];
-            // retrieve all indices of the face and store them in the indices vector
-            for(unsigned int j = 0; j < face.mNumIndices; j++)
-                indices.push_back(face.mIndices[j]);        
+
+            // 基本就是三个
+            /// 遍历一个面中的所有顶点
+            for (unsigned int j = 0; j < face.mNumIndices; j++)
+                indices.push_back(face.mIndices[j]);
         }
-        // process materials
-        aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];    
-        // we assume a convention for sampler names in the shaders. Each diffuse texture should be named
-        // as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER. 
-        // Same applies to other texture as the following list summarizes:
+
+        // 每个网格都对应一个材质
+        /// 有没有可能一个网格对应多个材质？
+        aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+
+        // 我们假设着色器中的采样器名称约定。 每个漫反射纹理应命名为'texture_diffuseN'，其中N是从1到MAX_SAMPLER_NUMBER的序列号。
+        //同样适用于其他纹理，如下列总结：
         // diffuse: texture_diffuseN
         // specular: texture_specularN
         // normal: texture_normalN
 
-        // 1. diffuse maps
-        vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+        // 一个材质可能会包含多张纹理
+        /// 将所有纹理按类型整理并添加
+        // 1. duffuse
+        vector<Texture> diffuseMaps;
+        loadMaterialTextures(diffuseMaps,material, aiTextureType_DIFFUSE, "texture_diffuse");
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-        // 2. specular maps
-        vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+
+        // 2. spec
+        vector<Texture> specularMaps;
+        loadMaterialTextures(specularMaps,material, aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-        // 3. normal maps
-        std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+
+        // 3.normal
+        std::vector<Texture> normalMaps;
+        loadMaterialTextures(normalMaps,material, aiTextureType_HEIGHT, "texture_normal");
         textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-        // 4. height maps
-        std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+
+        // 4. height
+        std::vector<Texture> heightMaps;
+        loadMaterialTextures(heightMaps,material, aiTextureType_AMBIENT, "texture_height");
         textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
-        
-        // return a mesh object created from the extracted mesh data
+
         return Mesh(vertices, indices, textures);
     }
 
-    // checks all material textures of a given type and loads the textures if they're not loaded yet.
-    // the required info is returned as a Texture struct.
-    vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName)
+    void loadMaterialTextures(vector<Texture>& textures , aiMaterial *mat, aiTextureType type, string typeName)
     {
-        vector<Texture> textures;
-        for(unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+//		vector<Texture> textures;
+        for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
         {
             aiString str;
-            mat->GetTexture(type, i, &str);
-            // check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
+            mat->GetTexture(type, i, &str);// 获取到纹理的name_str
             bool skip = false;
-            for(unsigned int j = 0; j < textures_loaded.size(); j++)
+            for (unsigned int j = 0; j < textures_loaded.size(); j++)
             {
-                if(std::strcmp(textures_loaded[j].path.data(), str.C_Str()) == 0)
+                // 如果纹理加载到显存，并已经添加到textures_loaded中，textures_loaded就不再重复添加了
+                // 避免纹理重复加载到显存
+                if (std::strcmp(textures_loaded[j].path.data(), str.C_Str()) == 0)
                 {
                     textures.push_back(textures_loaded[j]);
-                    skip = true; // a texture with the same filepath has already been loaded, continue to next one. (optimization)
+                    skip = true;
                     break;
                 }
             }
-            if(!skip)
-            {   // if texture hasn't been loaded already, load it
+
+            // 避免重复加载
+            if (!skip)
+            {
                 Texture texture;
                 texture.id = TextureFromFile(str.C_Str(), this->directory);
                 texture.type = typeName;
                 texture.path = str.C_Str();
                 textures.push_back(texture);
-                textures_loaded.push_back(texture);  // store it as texture loaded for entire model, to ensure we won't unnecessary load duplicate textures.
+                textures_loaded.push_back(texture);
             }
         }
-        return textures;
+//		return textures;
     }
 };
 
-
+//从磁盘加载纹理到显存，并返回一个texture_ID
 unsigned int TextureFromFile(const char *path, const string &directory, bool gamma)
 {
     string filename = string(path);
@@ -216,12 +237,9 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
     if (data)
     {
         GLenum format;
-        if (nrComponents == 1)
-            format = GL_RED;
-        else if (nrComponents == 3)
-            format = GL_RGB;
-        else if (nrComponents == 4)
-            format = GL_RGBA;
+        if (     nrComponents == 1)format = GL_RED;
+        else if (nrComponents == 3)format = GL_RGB;
+        else if (nrComponents == 4)format = GL_RGBA;
 
         glBindTexture(GL_TEXTURE_2D, textureID);
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
@@ -236,10 +254,10 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
     }
     else
     {
-        std::cout << "Texture failed to load at path: " << path << std::endl;
+        std::cout << "纹理无法从此路径加载: " << path << std::endl;
         stbi_image_free(data);
     }
-
     return textureID;
 }
-#endif
+
+

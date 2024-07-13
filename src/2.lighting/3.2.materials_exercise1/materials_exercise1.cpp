@@ -77,8 +77,10 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader lightingShader("3.2.materials.vs", "3.2.materials.fs");
-    Shader lightCubeShader("3.2.light_cube.vs", "3.2.light_cube.fs");
+    Shader lightingShader( "/Users/chen/Documents/LearnOpenGL/src/2.lighting/3.2.materials_exercise1/3.2.materials.vert",
+                           "/Users/chen/Documents/LearnOpenGL/src/2.lighting/3.2.materials_exercise1/3.2.materials.frag");
+    Shader lightCubeShader("/Users/chen/Documents/LearnOpenGL/src/2.lighting/3.2.materials_exercise1/3.2.light_cube.vert",
+                           "/Users/chen/Documents/LearnOpenGL/src/2.lighting/3.2.materials_exercise1/3.2.light_cube.frag");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
