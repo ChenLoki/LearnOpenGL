@@ -20,6 +20,11 @@ void main()
     vec3 lightDir   = normalize(lightPos - FragPos);
     float diff      = max(dot(norm, lightDir), 0.0);
     vec3 diffuse    = diff * lightColor;
+
+    // 计算f_r * Li * cos_theta
+//    float albedo = 0.8;
+//    float f_r = albedo / 3.1415926;
+//    diffuse *= f_r;
     
     // specular
     float specularStrength = 0.5;

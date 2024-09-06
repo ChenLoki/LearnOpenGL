@@ -78,8 +78,9 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader shader("6.2.cubemaps.vs", "6.2.cubemaps.fs");
-    Shader skyboxShader("6.2.skybox.vs", "6.2.skybox.fs");
+    std::string path = "/Users/chen/Documents/LearnOpenGL/src/4.advanced_opengl/6.2.cubemaps_environment_mapping/";
+    Shader shader((path+"6.2.cubemaps.vert").c_str(), (path+"6.2.cubemaps.frag").c_str());
+    Shader skyboxShader((path+"6.2.skybox.vert").c_str(), (path+"6.2.skybox.frag").c_str());
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

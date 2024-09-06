@@ -76,8 +76,9 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader asteroidShader("10.3.asteroids.vs", "10.3.asteroids.fs");
-    Shader planetShader("10.3.planet.vs", "10.3.planet.fs");
+    std::string path = "/Users/chen/Documents/LearnOpenGL/src/4.advanced_opengl/10.3.asteroids_instanced/";
+    Shader asteroidShader((path+"10.3.asteroids.vert").c_str(), (path+"10.3.asteroids.frag").c_str());
+    Shader planetShader((path+"10.3.planet.vert").c_str(), (path+"10.3.planet.frag").c_str());
 
     // load models
     // -----------

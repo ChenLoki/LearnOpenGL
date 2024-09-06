@@ -12,6 +12,8 @@ in VS_OUT {
     vec3 NormalColor;
     vec3 TanColor;
     vec3 BTanColor;
+
+    vec3 YuanshiNormal;
 } fs_in;
 
 uniform sampler2D texture_diffuse1;
@@ -50,5 +52,5 @@ void main()
     vec3 specular = vec3(0.5) * spec;
     FragColor = vec4(ambient + diffuse + specular, 1.0);
 
-    
+//    FragColor = vec4(fs_in.NormalColor , 1.0);
 }

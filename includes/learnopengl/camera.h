@@ -68,14 +68,10 @@ public:
     void ProcessKeyboard(Camera_Movement direction, float deltaTime)
     {
         float velocity = MovementSpeed * deltaTime;
-        if (direction == FORWARD)
-            Position += Front * velocity;
-        if (direction == BACKWARD)
-            Position -= Front * velocity;
-        if (direction == LEFT)
-            Position -= Right * velocity;
-        if (direction == RIGHT)
-            Position += Right * velocity;
+        if (direction == FORWARD)   Position += Front * velocity;
+        if (direction == BACKWARD)  Position -= Front * velocity;
+        if (direction == LEFT)      Position -= Right * velocity;
+        if (direction == RIGHT)     Position += Right * velocity;
     }
 
     // processes input received from a mouse input system. Expects the offset value in both the x and y direction.

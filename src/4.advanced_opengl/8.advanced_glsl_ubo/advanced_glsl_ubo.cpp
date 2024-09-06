@@ -74,10 +74,11 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader shaderRed("8.advanced_glsl.vs", "8.red.fs");
-    Shader shaderGreen("8.advanced_glsl.vs", "8.green.fs");
-    Shader shaderBlue("8.advanced_glsl.vs", "8.blue.fs");
-    Shader shaderYellow("8.advanced_glsl.vs", "8.yellow.fs");
+    std::string path = "/Users/chen/Documents/LearnOpenGL/src/4.advanced_opengl/8.advanced_glsl_ubo/";
+    Shader shaderRed((   path+"8.advanced_glsl.vert").c_str(), (path+"8.red.frag").c_str());
+    Shader shaderGreen(( path+"8.advanced_glsl.vert").c_str(), (path+"8.green.frag").c_str());
+    Shader shaderBlue((  path+"8.advanced_glsl.vert").c_str(), (path+"8.blue.frag").c_str());
+    Shader shaderYellow((path+"8.advanced_glsl.vert").c_str(), (path+"8.yellow.frag").c_str());
     
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

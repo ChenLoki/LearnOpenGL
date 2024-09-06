@@ -79,7 +79,8 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader shader("5.3.parallax_mapping.vs", "5.3.parallax_mapping.fs");
+    Shader shader("/Users/chen/Documents/LearnOpenGL/src/5.advanced_lighting/5.3.parallax_occlusion_mapping/5.3.parallax_mapping.vert",
+                "/Users/chen/Documents/LearnOpenGL/src/5.advanced_lighting/5.3.parallax_occlusion_mapping/5.3.parallax_mapping.frag");
 
     // load textures
     // -------------

@@ -7,8 +7,8 @@
 #include <assimp/Importer.hpp>        //assimp库头文件
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include "/Users/chen/Documents/LearnOpenGL-master/LearnOpenGL-test/includes/learnopengl/mesh.h"
-#include "/Users/chen/Documents/LearnOpenGL-master/LearnOpenGL-test/includes/learnopengl/shader.h"
+#include <learnopengl/mesh.h>
+#include <learnopengl/shader.h>
 
 #include <string>
 #include <fstream>

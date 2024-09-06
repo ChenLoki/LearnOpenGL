@@ -154,25 +154,25 @@ int main()
 //    Shader ourShader("/Users/zhechen/Documents/LearnOpenGL-master/LearnOpenGL-test/src/3.model_loading/1.model_loading/1.model_loading.vs", "/Users/zhechen/Documents/LearnOpenGL-master/LearnOpenGL-test/src/3.model_loading/1.model_loading/1.model_loading.fs");
 
     // normal
-    Shader ourShader("/Users/chen/Documents/LearnOpenGL-master/LearnOpenGL-test/src/3.model_loading/1.model_loading/4.normal_mapping.vs",
-                     "/Users/chen/Documents/LearnOpenGL-master/LearnOpenGL-test/src/3.model_loading/1.model_loading/4.normal_mapping.fs");
+    Shader ourShader("/Users/chen/Documents/LearnOpenGL/src/3.model_loading/1.model_loading/4.normal_mapping.vert",
+                     "/Users/chen/Documents/LearnOpenGL/src/3.model_loading/1.model_loading/4.normal_mapping.frag");
 
-    Shader ts_Shader("/Users/chen/Documents/LearnOpenGL-master/LearnOpenGL-test/src/3.model_loading/1.model_loading/normal_TS.vs",
-                     "/Users/chen/Documents/LearnOpenGL-master/LearnOpenGL-test/src/3.model_loading/1.model_loading/normal_TS.fs");
+    Shader ts_Shader("/Users/chen/Documents/LearnOpenGL/src/3.model_loading/1.model_loading/normal_TS.vert",
+                     "/Users/chen/Documents/LearnOpenGL/src/3.model_loading/1.model_loading/normal_TS.frag");
 
-    Shader ws_Shader("/Users/chen/Documents/LearnOpenGL-master/LearnOpenGL-test/src/3.model_loading/1.model_loading/normal_WS.vs",
-                     "/Users/chen/Documents/LearnOpenGL-master/LearnOpenGL-test/src/3.model_loading/1.model_loading/normal_WS.fs");
+    Shader ws_Shader("/Users/chen/Documents/LearnOpenGL/src/3.model_loading/1.model_loading/normal_WS.vert",
+                     "/Users/chen/Documents/LearnOpenGL/src/3.model_loading/1.model_loading/normal_WS.frag");
 
-    Shader yuanshiShader("/Users/chen/Documents/LearnOpenGL-master/LearnOpenGL-test/src/3.model_loading/1.model_loading/4.normal_mapping_yuanshi.vs",
-                         "/Users/chen/Documents/LearnOpenGL-master/LearnOpenGL-test/src/3.model_loading/1.model_loading/4.normal_mapping_yuanshi.fs");
+    Shader yuanshiShader("/Users/chen/Documents/LearnOpenGL/src/3.model_loading/1.model_loading/4.normal_mapping_yuanshi.vert",
+                         "/Users/chen/Documents/LearnOpenGL/src/3.model_loading/1.model_loading/4.normal_mapping_yuanshi.frag");
 
-    Shader geoNormalShader("/Users/chen/Documents/LearnOpenGL-master/LearnOpenGL-test/src/3.model_loading/1.model_loading/9.3.normal_visualization.vs",
-                           "/Users/chen/Documents/LearnOpenGL-master/LearnOpenGL-test/src/3.model_loading/1.model_loading/9.3.normal_visualization.fs",
-                           "/Users/chen/Documents/LearnOpenGL-master/LearnOpenGL-test/src/3.model_loading/1.model_loading/9.3.normal_visualization.gs");
+    Shader geoNormalShader("/Users/chen/Documents/LearnOpenGL/src/3.model_loading/1.model_loading/9.3.normal_visualization.vert",
+                           "/Users/chen/Documents/LearnOpenGL/src/3.model_loading/1.model_loading/9.3.normal_visualization.frag",
+                           "/Users/chen/Documents/LearnOpenGL/src/3.model_loading/1.model_loading/9.3.normal_visualization.geom");
 
-    Model ourModel("/Users/chen/Documents/LearnOpenGL-master/LearnOpenGL-test/resources/objects/nanosuit/nanosuit.obj");
+    Model ourModel("/Users/chen/Documents/LearnOpenGL/resources/objects/nanosuit/nanosuit.obj");
 
-    Model testModel("/Users/chen/Documents/LearnOpenGL-master/LearnOpenGL-test/resources/objects/nanosuit/nanosuit.obj");
+    Model testModel("/Users/chen/Documents/LearnOpenGL/resources/objects/nanosuit/nanosuit.obj");
     // draw in wireframe
 //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -181,6 +181,22 @@ int main()
         initModel();
         initTexture();
     }
+
+    // glm::mat4 test = glm::mat4(1.0f);
+    // test = glm::translate(test, glm::vec3(-0.8f, -0.8f, 0.0f));
+    // test = glm::scale(test, glm::vec3(0.1f, 0.1f, 0.1f));
+    // test = glm::rotate(test, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+    //
+    // glm::mat4 view = camera.GetViewMatrix();
+    // test = view*test;
+    //
+    // auto in_t  = glm::transpose(glm::inverse(test));
+    // auto t_in  = glm::inverse(glm::transpose(test));
+    //
+    // if(in_t == t_in)
+    // {
+    //     std::cout<<"=====dddd=="<<std::endl;
+    // }
 
     //循环渲染
     while (!glfwWindowShouldClose(window))

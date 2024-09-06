@@ -140,7 +140,8 @@ int main()
     glEnable(GL_CULL_FACE);
  
     // OpenGL initial state
-    Shader shader("debugging.vs", "debugging.fs");
+    Shader shader("/Users/chen/Documents/LearnOpenGL/src/7.in_practice/1.debugging/debugging.vert",
+                "/Users/chen/Documents/LearnOpenGL/src/7.in_practice/1.debugging/debugging.frag");
 
     // configure 3D cube
     unsigned int cubeVAO, cubeVBO;
@@ -210,7 +211,7 @@ int main()
     unsigned char *data = stbi_load(FileSystem::getPath("resources/textures/wood.png").c_str(), &width, &height, &nrComponents, 0);
     if (data)
     {
-        glTexImage2D(GL_FRAMEBUFFER, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_FRAMEBUFFER, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

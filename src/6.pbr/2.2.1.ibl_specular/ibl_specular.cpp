@@ -84,12 +84,18 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader pbrShader("2.2.1.pbr.vs", "2.2.1.pbr.fs");
-    Shader equirectangularToCubemapShader("2.2.1.cubemap.vs", "2.2.1.equirectangular_to_cubemap.fs");
-    Shader irradianceShader("2.2.1.cubemap.vs", "2.2.1.irradiance_convolution.fs");
-    Shader prefilterShader("2.2.1.cubemap.vs", "2.2.1.prefilter.fs");
-    Shader brdfShader("2.2.1.brdf.vs", "2.2.1.brdf.fs");
-    Shader backgroundShader("2.2.1.background.vs", "2.2.1.background.fs");
+    Shader pbrShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.pbr.vert",
+        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.pbr.frag");
+    Shader equirectangularToCubemapShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.cubemap.vert",
+        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.equirectangular_to_cubemap.frag");
+    Shader irradianceShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.cubemap.vert",
+        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.irradiance_convolution.frag");
+    Shader prefilterShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.cubemap.vert",
+        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.prefilter.frag");
+    Shader brdfShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.brdf.vert",
+        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.brdf.frag");
+    Shader backgroundShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.background.vert",
+        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.background.frag");
 
     pbrShader.use();
     pbrShader.setInt("irradianceMap", 0);

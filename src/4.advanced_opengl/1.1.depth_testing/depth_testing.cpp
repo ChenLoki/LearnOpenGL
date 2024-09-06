@@ -78,7 +78,8 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader shader("1.1.depth_testing.vs", "1.1.depth_testing.fs");
+    Shader shader("/Users/chen/Documents/LearnOpenGL/src/4.advanced_opengl/1.1.depth_testing/1.1.depth_testing.vert",
+                  "/Users/chen/Documents/LearnOpenGL/src/4.advanced_opengl/1.1.depth_testing/1.1.depth_testing.frag");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

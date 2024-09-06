@@ -20,12 +20,21 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
     // number of depth layers
     const float minLayers = 8;
     const float maxLayers = 32;
-    float numLayers = mix(maxLayers, minLayers, abs(dot(vec3(0.0, 0.0, 1.0), viewDir)));  
+
+    // x * (1- a) + y * a
+    // 插值函数
+    // 视野与法线夹角越小，分层越少
+    float numLayers = mix(maxLayers, minLayers, abs(dot(vec3(0.0, 0.0, 1.0), viewDir)));
+
     // calculate the size of each layer
+    // 总的深度设定为1
     float layerDepth = 1.0 / numLayers;
+
     // depth of current layer
     float currentLayerDepth = 0.0;
+
     // the amount to shift the texture coordinates per layer (from vector P)
+    // 从每个层中我们沿着 P 方向移动采样纹理坐标，直到我们找到一个采样低于当前层的深度值。
     vec2 P = viewDir.xy / viewDir.z * heightScale; 
     vec2 deltaTexCoords = P / numLayers;
   
@@ -37,12 +46,15 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
     {
         // shift texture coordinates along direction of P
         currentTexCoords -= deltaTexCoords;
+
         // get depthmap value at current texture coordinates
-        currentDepthMapValue = texture(depthMap, currentTexCoords).r;  
+        currentDepthMapValue = texture(depthMap, currentTexCoords).r;
+
         // get depth of next layer
         currentLayerDepth += layerDepth;  
     }
-    
+
+    // 这里返回的currentTexCoords是分层之后得到的，视觉上也会有分层
     return currentTexCoords;
 }
 
@@ -52,7 +64,8 @@ void main()
     vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
     vec2 texCoords = fs_in.TexCoords;
     
-    texCoords = ParallaxMapping(fs_in.TexCoords,  viewDir);       
+    texCoords = ParallaxMapping(fs_in.TexCoords,  viewDir);
+
     if(texCoords.x > 1.0 || texCoords.y > 1.0 || texCoords.x < 0.0 || texCoords.y < 0.0)
         discard;
 
@@ -62,12 +75,15 @@ void main()
    
     // get diffuse color
     vec3 color = texture(diffuseMap, texCoords).rgb;
+
     // ambient
     vec3 ambient = 0.1 * color;
+
     // diffuse
     vec3 lightDir = normalize(fs_in.TangentLightPos - fs_in.TangentFragPos);
     float diff = max(dot(lightDir, normal), 0.0);
     vec3 diffuse = diff * color;
+
     // specular    
     vec3 reflectDir = reflect(-lightDir, normal);
     vec3 halfwayDir = normalize(lightDir + viewDir);  

@@ -50,7 +50,8 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader shader("10.1.instancing.vs", "10.1.instancing.fs");
+    std::string path = "/Users/chen/Documents/LearnOpenGL/src/4.advanced_opengl/10.1.instancing_quads/";
+    Shader shader((path+"10.1.instancing.vert").c_str(), (path+"10.1.instancing.frag").c_str());
 
     // generate a list of 100 quad locations/translation-vectors
     // ---------------------------------------------------------
@@ -70,10 +71,12 @@ int main()
 
     // store instance data in an array buffer
     // --------------------------------------
+    // 在显存中创建一个GL_ARRAY_BUFFER，将offset数据copy到这个内存区域
     unsigned int instanceVBO;
     glGenBuffers(1, &instanceVBO);
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 100, &translations[0], GL_STATIC_DRAW);
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 100, &translations[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(translations), translations, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
@@ -90,22 +93,28 @@ int main()
     };
     unsigned int quadVAO, quadVBO;
     glGenVertexArrays(1, &quadVAO);
-    glGenBuffers(1, &quadVBO);
     glBindVertexArray(quadVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
-    // also set instance data
-    glEnableVertexAttribArray(2);
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO); // this attribute comes from a different vertex buffer
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glVertexAttribDivisor(2, 1); // tell OpenGL this is an instanced vertex attribute.
+    {
+        // 顶点数据保存在另一个显存区域
+        glGenBuffers(1, &quadVBO);
+        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
 
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
 
+        // also set instance data
+        glEnableVertexAttribArray(2);// 激活shader中的顶点属性，这里实际上不是单独顶点的属性，而是instance的属性
+        glBindBuffer(GL_ARRAY_BUFFER, instanceVBO); // this attribute comes from a different vertex buffer
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        // 2号属性，每1个实例读取一组数据（2个float）
+        glVertexAttribDivisor(2, 1); // tell OpenGL this is an instanced vertex attribute.
+    }
+    glBindVertexArray(0);
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))

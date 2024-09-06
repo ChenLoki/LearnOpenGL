@@ -30,6 +30,14 @@ void main()
     vec3 N = normalize(mat3(model) * aNormal);
     mat3 TBN = transpose(mat3(T, B, N));
 
+//        mat3 normalMatrix = transpose(inverse(mat3(model)));
+//        vec3 N = normalize(normalMatrix * aNormal);
+//        vec3 T = normalize(normalMatrix * vec3(0.3,0.7,0.9));
+//        T = normalize(T - dot(T, N) * N);
+//        vec3 B = cross(N, T);
+//        B = normalize(B);
+//        mat3 TBN = transpose(mat3(T, B, N));
+
     vs_out.TangentLightPos = TBN * lightPos;
     vs_out.TangentViewPos  = TBN * viewPos;
     vs_out.TangentFragPos  = TBN * vs_out.FragPos;

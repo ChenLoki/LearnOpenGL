@@ -21,8 +21,11 @@ unsigned int loadTexture(const char *path);
 void renderSphere();
 
 // settings
-const unsigned int SCR_WIDTH = 1280;
-const unsigned int SCR_HEIGHT = 720;
+const unsigned int SCR_WIDTH  = 1000;
+const unsigned int SCR_HEIGHT = 2000;
+
+float metallic = 0.65;
+float roughness =0.73;
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -79,11 +82,21 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader shader("1.1.pbr.vs", "1.1.pbr.fs");
+    Shader shader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/1.1.lighting/1.1.pbr.vert",
+                "/Users/chen/Documents/LearnOpenGL/src/6.pbr/1.1.lighting/1.1.pbr.frag");
+
+    Shader shader_nano("/Users/chen/Documents/LearnOpenGL/src/6.pbr/1.1.lighting/nano_pbr.vert",
+                     "/Users/chen/Documents/LearnOpenGL/src/6.pbr/1.1.lighting/nano_pbr.frag");
+
+    Model ourModel("/Users/chen/Documents/LearnOpenGL/resources/objects/nanosuit/nanosuit.obj");
 
     shader.use();
     shader.setVec3("albedo", 0.5f, 0.0f, 0.0f);
     shader.setFloat("ao", 1.0f);
+
+    shader_nano.use();
+    shader_nano.setVec3("albedo", 1.f, 1.0f, 1.0f);
+    shader_nano.setFloat("ao", 1.0f);
 
     // lights
     // ------
@@ -107,6 +120,9 @@ int main()
     shader.use();
     shader.setMat4("projection", projection);
 
+    shader_nano.use();
+    shader_nano.setMat4("projection", projection);
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -126,33 +142,41 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        shader.use();
         glm::mat4 view = camera.GetViewMatrix();
+
+
+        shader.use();
         shader.setMat4("view", view);
         shader.setVec3("camPos", camera.Position);
 
+        shader_nano.use();
+        shader_nano.setMat4("view", view);
+        shader_nano.setVec3("camPos", camera.Position);
+
         // render rows*column number of spheres with varying metallic/roughness values scaled by rows and columns respectively
         glm::mat4 model = glm::mat4(1.0f);
-        for (int row = 0; row < nrRows; ++row) 
-        {
-            shader.setFloat("metallic", (float)row / (float)nrRows);
-            for (int col = 0; col < nrColumns; ++col) 
-            {
-                // we clamp the roughness to 0.05 - 1.0 as perfectly smooth surfaces (roughness of 0.0) tend to look a bit off
-                // on direct lighting.
-                shader.setFloat("roughness", glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f));
-                
-                model = glm::mat4(1.0f);
-                model = glm::translate(model, glm::vec3(
-                    (col - (nrColumns / 2)) * spacing, 
-                    (row - (nrRows / 2)) * spacing, 
-                    0.0f));
-                
-                shader.setMat4("model", model);
-                shader.setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
-                renderSphere();
-            }
-        }
+        // for (int row = 0; row < nrRows; ++row)
+        // {
+        //     shader.setFloat("metallic", (float)row / (float)nrRows);
+        //     for (int col = 0; col < nrColumns; ++col)
+        //     {
+        //         // we clamp the roughness to 0.05 - 1.0 as perfectly smooth surfaces (roughness of 0.0) tend to look a bit off
+        //         // on direct lighting.
+        //         shader.setFloat("roughness", glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f));
+        //
+        //         model = glm::mat4(1.0f);
+        //         model = glm::translate(model, glm::vec3(
+        //             (col - (nrColumns / 2)) * spacing,
+        //             (row - (nrRows / 2)) * spacing,
+        //             0.0f));
+        //
+        //         shader.setMat4("model", model);
+        //         shader.setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+        //         renderSphere();
+        //     }
+        // }
+
+
 
         // render light source (simply re-render sphere at light positions)
         // this looks a bit off as we use the same shader, but it'll make their positions obvious and 
@@ -161,15 +185,54 @@ int main()
         {
             glm::vec3 newPos = lightPositions[i] + glm::vec3(sin(glfwGetTime() * 5.0) * 5.0, 0.0, 0.0);
             newPos = lightPositions[i];
+            shader.use();
             shader.setVec3("lightPositions[" + std::to_string(i) + "]", newPos);
             shader.setVec3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
 
             model = glm::mat4(1.0f);
             model = glm::translate(model, newPos);
             model = glm::scale(model, glm::vec3(0.5f));
+            shader.use();
             shader.setMat4("model", model);
             shader.setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
             renderSphere();
+
+            shader_nano.use();
+            shader_nano.setVec3("lightPositions[" + std::to_string(i) + "]", newPos);
+            shader_nano.setVec3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
+        }
+
+        int ball = 1;
+        if(ball)
+        {
+            shader.use();
+            shader.setFloat("metallic",  metallic);
+            shader.setFloat("roughness", roughness);
+
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(0,-0.2,0));
+            model = glm::scale(model , glm::vec3(0.2,0.2,0.2));
+
+            shader.setMat4("model", model);
+            shader.setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+            renderSphere();
+        }
+
+        int nano = 1;
+        if(nano)
+        {
+            shader_nano.use();
+            shader_nano.setFloat("metallic",  metallic);
+            shader_nano.setFloat("roughness", roughness);
+
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(0,0,0));
+            model = glm::scale(model , glm::vec3(0.1,0.1,0.1));
+            model = glm::rotate(model,(float)glfwGetTime(),glm::vec3(0,1.0,0));
+
+            shader_nano.setMat4("model", model);
+            shader_nano.setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+            ourModel.Draw(shader_nano);
         }
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -191,14 +254,48 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)camera.ProcessKeyboard(FORWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)camera.ProcessKeyboard(BACKWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)camera.ProcessKeyboard(LEFT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)camera.ProcessKeyboard(RIGHT, deltaTime);
+
+    std::cout << std::fixed << std::setprecision(4);
+
+    float speed = 0.01f;
+
+    if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
+    {
+        metallic+=speed;
+        if(metallic>=1.0)
+            metallic=1.0;
+
+        std::cout << "metallic" << metallic << std::endl;
+    }
+    if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
+    {
+        metallic-=speed;
+        if(metallic<=0.0)
+            metallic=0.0;
+
+        std::cout << "metallic" << metallic << std::endl;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
+    {
+        roughness+=speed;
+        if(roughness>=1.0)
+            roughness=1.0;
+
+        std::cout << "roughness" << roughness << std::endl;
+    }
+    if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
+    {
+        roughness-=speed;
+        if(roughness<=0.0)
+            roughness=0.0;
+
+        std::cout << "roughness" << roughness << std::endl;
+    }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes

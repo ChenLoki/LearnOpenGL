@@ -79,7 +79,8 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader shader("5.2.parallax_mapping.vs", "5.2.parallax_mapping.fs");
+    Shader shader("/Users/chen/Documents/LearnOpenGL/src/5.advanced_lighting/5.2.steep_parallax_mapping/5.2.parallax_mapping.vert",
+                "/Users/chen/Documents/LearnOpenGL/src/5.advanced_lighting/5.2.steep_parallax_mapping/5.2.parallax_mapping.frag");
 
     // load textures
     // -------------
@@ -134,12 +135,9 @@ int main()
         shader.setVec3("lightPos", lightPos);
         shader.setFloat("heightScale", heightScale); // adjust with Q and E keys
         std::cout << heightScale << std::endl;
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, diffuseMap);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, normalMap);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, heightMap);
+        glActiveTexture(GL_TEXTURE0); glBindTexture(GL_TEXTURE_2D, diffuseMap);
+        glActiveTexture(GL_TEXTURE1); glBindTexture(GL_TEXTURE_2D, normalMap);
+        glActiveTexture(GL_TEXTURE2); glBindTexture(GL_TEXTURE_2D, heightMap);
         renderQuad();
 
         // render light source (simply re-renders a smaller plane at the light's position for debugging/visualization)

@@ -94,7 +94,8 @@ int main()
 
 	// build and compile shaders
 	// -------------------------
-	Shader ourShader("1.model_loading.vs", "1.model_loading.fs");
+	Shader ourShader( "/Users/chen/Documents/LearnOpenGL/src/8.guest/2021/1.scene/1.scene_graph/1.model_loading.vert",
+					"/Users/chen/Documents/LearnOpenGL/src/8.guest/2021/1.scene/1.scene_graph/1.model_loading.frag");
 
 	// load entities
 	// -----------

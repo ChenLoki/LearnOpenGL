@@ -81,9 +81,12 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader shaderGeometryPass("8.2.g_buffer.vs", "8.2.g_buffer.fs");
-    Shader shaderLightingPass("8.2.deferred_shading.vs", "8.2.deferred_shading.fs");
-    Shader shaderLightBox("8.2.deferred_light_box.vs", "8.2.deferred_light_box.fs");
+    Shader shaderGeometryPass("/Users/chen/Documents/LearnOpenGL/src/5.advanced_lighting/8.2.deferred_shading_volumes/8.2.g_buffer.vert",
+                              "/Users/chen/Documents/LearnOpenGL/src/5.advanced_lighting/8.2.deferred_shading_volumes/8.2.g_buffer.frag");
+    Shader shaderLightingPass("/Users/chen/Documents/LearnOpenGL/src/5.advanced_lighting/8.2.deferred_shading_volumes/8.2.deferred_shading.vert",
+                              "/Users/chen/Documents/LearnOpenGL/src/5.advanced_lighting/8.2.deferred_shading_volumes/8.2.deferred_shading.frag");
+    Shader shaderLightBox("/Users/chen/Documents/LearnOpenGL/src/5.advanced_lighting/8.2.deferred_shading_volumes/8.2.deferred_light_box.vert",
+                          "/Users/chen/Documents/LearnOpenGL/src/5.advanced_lighting/8.2.deferred_shading_volumes/8.2.deferred_light_box.frag");
 
     // load models
     // -----------

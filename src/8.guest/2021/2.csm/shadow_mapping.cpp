@@ -112,10 +112,17 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader shader("10.shadow_mapping.vs", "10.shadow_mapping.fs");
-    Shader simpleDepthShader("10.shadow_mapping_depth.vs", "10.shadow_mapping_depth.fs", "10.shadow_mapping_depth.gs");
-    Shader debugDepthQuad("10.debug_quad.vs", "10.debug_quad_depth.fs");
-    Shader debugCascadeShader("10.debug_cascade.vs", "10.debug_cascade.fs");
+    std::string path= "/Users/chen/Documents/LearnOpenGL/src/8.guest/2021/2.csm/";
+
+    Shader shader((path+"10.shadow_mapping.vert").c_str(),
+                (path+"10.shadow_mapping.frag").c_str());
+    Shader simpleDepthShader(     (path+"10.shadow_mapping_depth.vert").c_str(),
+                                (path+"10.shadow_mapping_depth.frag").c_str(),
+                                           (path+"10.shadow_mapping_depth.gs").c_str());
+    Shader debugDepthQuad((path+"10.debug_quad.vert").c_str(),
+                        (path+"10.debug_quad_depth.frag").c_str());
+    Shader debugCascadeShader((path+"10.debug_cascade.vert").c_str(),
+                            (path+"10.debug_cascade.frag").c_str());
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

@@ -17,6 +17,10 @@ uniform vec3 lightColors[4];
 uniform vec3 camPos;
 
 const float PI = 3.14159265359;
+
+//uniform sampler2D texture_diffuse1;
+//uniform sampler2D texture_normal1;
+
 // ----------------------------------------------------------------------------
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
@@ -31,6 +35,7 @@ float DistributionGGX(vec3 N, vec3 H, float roughness)
 
     return nom / denom;
 }
+
 // ----------------------------------------------------------------------------
 float GeometrySchlickGGX(float NdotV, float roughness)
 {
@@ -42,6 +47,7 @@ float GeometrySchlickGGX(float NdotV, float roughness)
 
     return nom / denom;
 }
+
 // ----------------------------------------------------------------------------
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 {
@@ -52,11 +58,13 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 
     return ggx1 * ggx2;
 }
+
 // ----------------------------------------------------------------------------
 vec3 fresnelSchlick(float cosTheta, vec3 F0)
 {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
+
 // ----------------------------------------------------------------------------
 void main()
 {		
@@ -70,23 +78,26 @@ void main()
 
     // reflectance equation
     vec3 Lo = vec3(0.0);
-    for(int i = 0; i < 4; ++i) 
+    vec3 fr = vec3(0.0);
+    for(int i = 0; i < 1; ++i)
     {
         // calculate per-light radiance
         vec3 L = normalize(lightPositions[i] - WorldPos);
         vec3 H = normalize(V + L);
         float distance = length(lightPositions[i] - WorldPos);
-        float attenuation = 1.0 / (distance * distance);
+        float attenuation = 1.0 / (distance * distance);// 光源强度的衰减其实是来自于光源在单位半球面上的立体角的投影
         vec3 radiance = lightColors[i] * attenuation;
 
         // Cook-Torrance BRDF
-        float NDF = DistributionGGX(N, H, roughness);   
-        float G   = GeometrySmith(N, V, L, roughness);      
-        vec3 F    = fresnelSchlick(clamp(dot(H, V), 0.0, 1.0), F0);
+        float NDF = DistributionGGX(N, H, roughness); // 法线方向 和 半程向量方向
+        float G   = GeometrySmith(N, V, L, roughness);// 法线方向 和 视角方向  光线方向
+        vec3 F    = fresnelSchlick(clamp(dot(H, V), 0.0, 1.0), F0);// 视角方向 和 半程向量方向
            
         vec3 numerator    = NDF * G * F; 
         float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001; // + 0.0001 to prevent divide by zero
         vec3 specular = numerator / denominator;
+
+
         
         // kS is equal to Fresnel
         vec3 kS = F;
@@ -103,19 +114,29 @@ void main()
         float NdotL = max(dot(N, L), 0.0);        
 
         // add to outgoing radiance Lo
+//        Lo += (specular) * radiance * NdotL;
+
+        // 为什么这里不乘dw_i，因为光源都是点光源，dw可以认为是无限小，此时算作是单根光线的irradiance
         Lo += (kD * albedo / PI + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
-    }   
+
+        fr = vec3(G,G,G);
+    }
     
     // ambient lighting (note that the next IBL tutorial will replace 
     // this ambient lighting with environment lighting).
     vec3 ambient = vec3(0.03) * albedo * ao;
 
-    vec3 color = ambient + Lo;
+    vec3 color = ambient + Lo;// 环境光可以通过全局光照正确计算
+
+//    vec3 objColor = texture(texture_diffuse1, TexCoords).rgb;
+//    color *= objColor;
 
     // HDR tonemapping
     color = color / (color + vec3(1.0));
     // gamma correct
     color = pow(color, vec3(1.0/2.2)); 
 
-    FragColor = vec4(color, 1.0);
+//    FragColor = vec4(color, 1.0);
+
+    FragColor = vec4(fr, 1.0);
 }

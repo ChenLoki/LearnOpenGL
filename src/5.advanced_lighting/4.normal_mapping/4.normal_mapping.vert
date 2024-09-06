@@ -30,6 +30,12 @@ void main()
     vec3 N = normalize(normalMatrix * aNormal);
     T = normalize(T - dot(T, N) * N);
     vec3 B = cross(N, T);
+
+//    vec3 N = normalize(normalMatrix * aNormal);
+//    vec3 T = normalize(normalMatrix * vec3(0.3,0.7,0.9));
+//    T = normalize(T - dot(T, N) * N);
+//    vec3 B = cross(N, T);
+//    B = normalize(B);
     
     mat3 TBN = transpose(mat3(T, B, N));    
     vs_out.TangentLightPos = TBN * lightPos;

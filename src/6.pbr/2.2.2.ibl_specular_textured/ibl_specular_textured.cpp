@@ -85,12 +85,18 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader pbrShader("2.2.2.pbr.vs", "2.2.2.pbr.fs");
-    Shader equirectangularToCubemapShader("2.2.2.cubemap.vs", "2.2.2.equirectangular_to_cubemap.fs");
-    Shader irradianceShader("2.2.2.cubemap.vs", "2.2.2.irradiance_convolution.fs");
-    Shader prefilterShader("2.2.2.cubemap.vs", "2.2.2.prefilter.fs");
-    Shader brdfShader("2.2.2.brdf.vs", "2.2.2.brdf.fs");
-    Shader backgroundShader("2.2.2.background.vs", "2.2.2.background.fs");
+    Shader pbrShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.2.ibl_specular_textured/2.2.2.pbr.vert",
+        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.2.ibl_specular_textured/2.2.2.pbr.frag");
+    Shader equirectangularToCubemapShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.2.ibl_specular_textured/2.2.2.cubemap.vert",
+        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.2.ibl_specular_textured/2.2.2.equirectangular_to_cubemap.frag");
+    Shader irradianceShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.2.ibl_specular_textured/2.2.2.cubemap.vert",
+        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.2.ibl_specular_textured/2.2.2.irradiance_convolution.frag");
+    Shader prefilterShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.2.ibl_specular_textured/2.2.2.cubemap.vert",
+        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.2.ibl_specular_textured/2.2.2.prefilter.frag");
+    Shader brdfShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.2.ibl_specular_textured/2.2.2.brdf.vert",
+        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.2.ibl_specular_textured/2.2.2.brdf.frag");
+    Shader backgroundShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.2.ibl_specular_textured/2.2.2.background.vert",
+        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.2.ibl_specular_textured/2.2.2.background.frag");
 
     pbrShader.use();
     pbrShader.setInt("irradianceMap", 0);

@@ -79,7 +79,8 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader shader("5.1.parallax_mapping.vs", "5.1.parallax_mapping.fs");
+    Shader shader("/Users/chen/Documents/LearnOpenGL/src/5.advanced_lighting/5.1.parallax_mapping/5.1.parallax_mapping.vert",
+                "/Users/chen/Documents/LearnOpenGL/src/5.advanced_lighting/5.1.parallax_mapping/5.1.parallax_mapping.frag");
 
     // load textures
     // -------------
@@ -126,6 +127,7 @@ int main()
         shader.use();
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
+
         // render parallax-mapped quad
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::rotate(model, glm::radians((float)glfwGetTime() * -10.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0))); // rotate the quad to show parallax mapping from multiple directions
@@ -134,12 +136,9 @@ int main()
         shader.setVec3("lightPos", lightPos);
         shader.setFloat("heightScale", heightScale); // adjust with Q and E keys
         std::cout << heightScale << std::endl;
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, diffuseMap);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, normalMap);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, heightMap);
+        glActiveTexture(GL_TEXTURE0);        glBindTexture(GL_TEXTURE_2D, diffuseMap);
+        glActiveTexture(GL_TEXTURE1);        glBindTexture(GL_TEXTURE_2D, normalMap);
+        glActiveTexture(GL_TEXTURE2);        glBindTexture(GL_TEXTURE_2D, heightMap);
         renderQuad();
 
         // render light source (simply re-renders a smaller plane at the light's position for debugging/visualization)

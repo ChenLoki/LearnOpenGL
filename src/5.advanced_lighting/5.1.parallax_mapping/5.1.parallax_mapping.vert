@@ -24,11 +24,21 @@ void main()
 {
     vs_out.FragPos = vec3(model * vec4(aPos, 1.0));   
     vs_out.TexCoords = aTexCoords;   
-    
+
+    // 视差贴图中只能用这种UV方向偏移计算的TB方向
     vec3 T = normalize(mat3(model) * aTangent);
     vec3 B = normalize(mat3(model) * aBitangent);
     vec3 N = normalize(mat3(model) * aNormal);
     mat3 TBN = transpose(mat3(T, B, N));
+
+// 视差贴图中不能使用这种算法
+//    mat3 normalMatrix = transpose(inverse(mat3(model)));
+//    vec3 N = normalize(normalMatrix * aNormal);
+//    vec3 T = normalize(normalMatrix * vec3(0.3,0.7,0.9));
+//    T = normalize(T - dot(T, N) * N);
+//    vec3 B = cross(N, T);
+//    B = normalize(B);
+//    mat3 TBN = transpose(mat3(T, B, N));
 
     vs_out.TangentLightPos = TBN * lightPos;
     vs_out.TangentViewPos  = TBN * viewPos;

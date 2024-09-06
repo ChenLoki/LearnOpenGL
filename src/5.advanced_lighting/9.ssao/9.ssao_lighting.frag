@@ -17,29 +17,37 @@ struct Light {
 };
 uniform Light light;
 
+//uniform int ssao;
+
 void main()
 {             
     // retrieve data from gbuffer
-    vec3 FragPos = texture(gPosition, TexCoords).rgb;
-    vec3 Normal = texture(gNormal, TexCoords).rgb;
-    vec3 Diffuse = texture(gAlbedo, TexCoords).rgb;
-    float AmbientOcclusion = texture(ssao, TexCoords).r;
+    vec3 FragPos            = texture(gPosition, TexCoords).rgb;
+    vec3 Normal             = texture(gNormal,   TexCoords).rgb;
+    vec3 Diffuse            = texture(gAlbedo,   TexCoords).rgb;
+
+    float AmbientOcclusion = 1.0;
+//    if(gl_FragCoord.x<800)
+        AmbientOcclusion  = texture(ssao,TexCoords).r;
     
     // then calculate lighting as usual
-    vec3 ambient = vec3(0.3 * Diffuse * AmbientOcclusion);
-    vec3 lighting  = ambient; 
-    vec3 viewDir  = normalize(-FragPos); // viewpos is (0.0.0)
+    vec3 ambient    = vec3(0.3 * Diffuse * AmbientOcclusion);
+    vec3 lighting   = ambient;
+    vec3 viewDir    = normalize(-FragPos); // viewpos is (0.0.0)
+
     // diffuse
-    vec3 lightDir = normalize(light.Position - FragPos);
-    vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Diffuse * light.Color;
+    vec3 lightDir   = normalize(light.Position - FragPos);
+    vec3 diffuse    = max(dot(Normal, lightDir), 0.0) * Diffuse * light.Color;
+
     // specular
     vec3 halfwayDir = normalize(lightDir + viewDir);  
-    float spec = pow(max(dot(Normal, halfwayDir), 0.0), 8.0);
-    vec3 specular = light.Color * spec;
+    float spec      = pow(max(dot(Normal, halfwayDir), 0.0), 8.0);
+    vec3 specular   = light.Color * spec;
+
     // attenuation
     float distance = length(light.Position - FragPos);
     float attenuation = 1.0 / (1.0 + light.Linear * distance + light.Quadratic * distance * distance);
-    diffuse *= attenuation;
+    diffuse  *= attenuation;
     specular *= attenuation;
     lighting += diffuse + specular;
 
