@@ -84,18 +84,13 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader pbrShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.pbr.vert",
-        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.pbr.frag");
-    Shader equirectangularToCubemapShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.cubemap.vert",
-        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.equirectangular_to_cubemap.frag");
-    Shader irradianceShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.cubemap.vert",
-        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.irradiance_convolution.frag");
-    Shader prefilterShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.cubemap.vert",
-        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.prefilter.frag");
-    Shader brdfShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.brdf.vert",
-        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.brdf.frag");
-    Shader backgroundShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.background.vert",
-        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/2.2.1.background.frag");
+    std::string path = "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.2.1.ibl_specular/";
+    Shader pbrShader(                     (path+"2.2.1.pbr.vert").c_str(),        (path+"2.2.1.pbr.frag").c_str());
+    Shader equirectangularToCubemapShader((path+"2.2.1.cubemap.vert").c_str(),    (path+"2.2.1.equirectangular_to_cubemap.frag").c_str());
+    Shader irradianceShader(              (path+"2.2.1.cubemap.vert").c_str(),    (path+"2.2.1.irradiance_convolution.frag").c_str());
+    Shader prefilterShader(               (path+"2.2.1.cubemap.vert").c_str(),    (path+"2.2.1.prefilter.frag").c_str());
+    Shader brdfShader(                    (path+"2.2.1.brdf.vert").c_str(),       (path+"2.2.1.brdf.frag").c_str());
+    Shader backgroundShader(              (path+"2.2.1.background.vert").c_str(), (path+"2.2.1.background.frag").c_str());
 
     pbrShader.use();
     pbrShader.setInt("irradianceMap", 0);
@@ -106,17 +101,18 @@ int main()
 
     backgroundShader.use();
     backgroundShader.setInt("environmentMap", 0);
-
   
     // lights
     // ------
-    glm::vec3 lightPositions[] = {
+    glm::vec3 lightPositions[] =
+    {
         glm::vec3(-10.0f,  10.0f, 10.0f),
         glm::vec3( 10.0f,  10.0f, 10.0f),
         glm::vec3(-10.0f, -10.0f, 10.0f),
         glm::vec3( 10.0f, -10.0f, 10.0f),
     };
-    glm::vec3 lightColors[] = {
+    glm::vec3 lightColors[] =
+    {
         glm::vec3(300.0f, 300.0f, 300.0f),
         glm::vec3(300.0f, 300.0f, 300.0f),
         glm::vec3(300.0f, 300.0f, 300.0f),
@@ -128,6 +124,8 @@ int main()
 
     // pbr: setup framebuffer
     // ----------------------
+    // 1.start
+    // 将柱状HDR_envCubemap 转存到立方体envCubemap上
     unsigned int captureFBO;
     unsigned int captureRBO;
     glGenFramebuffers(1, &captureFBO);
@@ -198,6 +196,7 @@ int main()
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, hdrTexture);
 
+
     glViewport(0, 0, 512, 512); // don't forget to configure the viewport to the capture dimensions.
     glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
     for (unsigned int i = 0; i < 6; ++i)
@@ -213,7 +212,12 @@ int main()
     // then let OpenGL generate mipmaps from first mip face (combatting visible dots artifact)
     glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
     glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+    // 1.end
 
+
+
+    // 2.start
+    // 在半球面上采样，渲染一张irradianceMap
     // pbr: create an irradiance cubemap, and re-scale capture FBO to irradiance scale.
     // --------------------------------------------------------------------------------
     unsigned int irradianceMap;
@@ -252,9 +256,14 @@ int main()
         renderCube();
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    //2.end
 
+
+    //3.start 跟半球面采样有点类似
     // pbr: create a pre-filter cubemap, and re-scale capture FBO to pre-filter scale.
     // --------------------------------------------------------------------------------
+
+    // 创建一张空的立方体纹理prefilterMap
     unsigned int prefilterMap;
     glGenTextures(1, &prefilterMap);
     glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterMap);
@@ -271,6 +280,7 @@ int main()
     glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
     // pbr: run a quasi monte-carlo simulation on the environment lighting to create a prefilter (cube)map.
+    // 在环境照明上运行一个准蒙特卡罗模拟来创建一个预过滤器(立方体)贴图。
     // ----------------------------------------------------------------------------------------------------
     prefilterShader.use();
     prefilterShader.setInt("environmentMap", 0);
@@ -279,6 +289,8 @@ int main()
     glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
 
     glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+
+    // 5个等级的环境贴图并不是自动生成的，而是通过精确的预计算将数据写入到prefilterMap的不同level中
     unsigned int maxMipLevels = 5;
     for (unsigned int mip = 0; mip < maxMipLevels; ++mip)
     {
@@ -289,6 +301,7 @@ int main()
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
         glViewport(0, 0, mipWidth, mipHeight);
 
+        // mipmap等级越高，对应粗糙度越高，图像越模糊
         float roughness = (float)mip / (float)(maxMipLevels - 1);
         prefilterShader.setFloat("roughness", roughness);
         for (unsigned int i = 0; i < 6; ++i)
@@ -301,7 +314,12 @@ int main()
         }
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    //3.end
 
+
+
+    // 4.start
+    // 生成BRDF的2通道LUT
     // pbr: generate a 2D LUT from the BRDF equations used.
     // ----------------------------------------------------
     unsigned int brdfLUTTexture;
@@ -310,6 +328,7 @@ int main()
     // pre-allocate enough memory for the LUT texture.
     glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 512, 512, 0, GL_RG, GL_FLOAT, 0);
+
     // be sure to set wrapping mode to GL_CLAMP_TO_EDGE
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -328,6 +347,7 @@ int main()
     renderQuad();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // 4.end
 
 
     // initialize static shader uniforms before rendering
@@ -370,12 +390,9 @@ int main()
         pbrShader.setVec3("camPos", camera.Position);
 
         // bind pre-computed IBL data
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterMap);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
+        glActiveTexture(GL_TEXTURE0);        glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
+        glActiveTexture(GL_TEXTURE1);        glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterMap);
+        glActiveTexture(GL_TEXTURE2);        glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
 
         // render rows*column number of spheres with varying metallic/roughness values scaled by rows and columns respectively
         glm::mat4 model = glm::mat4(1.0f);

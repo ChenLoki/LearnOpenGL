@@ -25,7 +25,7 @@ const unsigned int SCR_WIDTH  = 1000;
 const unsigned int SCR_HEIGHT = 2000;
 
 float metallic = 0.65;
-float roughness =0.73;
+float roughness =0.81;
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -61,9 +61,9 @@ int main()
         glfwTerminate();
         return -1;
     }
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetScrollCallback(window, scroll_callback);
+    glfwSetFramebufferSizeCallback( window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(       window, mouse_callback);
+    glfwSetScrollCallback(          window, scroll_callback);
 
     // tell GLFW to capture our mouse
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -187,7 +187,7 @@ int main()
             newPos = lightPositions[i];
             shader.use();
             shader.setVec3("lightPositions[" + std::to_string(i) + "]", newPos);
-            shader.setVec3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
+            shader.setVec3("lightColors["    + std::to_string(i) + "]", lightColors[i]);
 
             model = glm::mat4(1.0f);
             model = glm::translate(model, newPos);
@@ -269,7 +269,7 @@ void processInput(GLFWwindow *window)
         if(metallic>=1.0)
             metallic=1.0;
 
-        std::cout << "metallic" << metallic << std::endl;
+        std::cout << "metallic " << metallic << std::endl;
     }
     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
     {
@@ -277,7 +277,7 @@ void processInput(GLFWwindow *window)
         if(metallic<=0.0)
             metallic=0.0;
 
-        std::cout << "metallic" << metallic << std::endl;
+        std::cout << "metallic " << metallic << std::endl;
     }
 
     if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
@@ -286,7 +286,7 @@ void processInput(GLFWwindow *window)
         if(roughness>=1.0)
             roughness=1.0;
 
-        std::cout << "roughness" << roughness << std::endl;
+        std::cout << "roughness " << roughness << std::endl;
     }
     if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
     {
@@ -294,7 +294,7 @@ void processInput(GLFWwindow *window)
         if(roughness<=0.0)
             roughness=0.0;
 
-        std::cout << "roughness" << roughness << std::endl;
+        std::cout << "roughness " << roughness << std::endl;
     }
 }
 
@@ -364,11 +364,15 @@ void renderSphere()
         {
             for (unsigned int y = 0; y <= Y_SEGMENTS; ++y)
             {
-                float xSegment = (float)x / (float)X_SEGMENTS;
-                float ySegment = (float)y / (float)Y_SEGMENTS;
-                float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
-                float yPos = std::cos(ySegment * PI);
-                float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+                float xSegment = (float)x / (float)X_SEGMENTS;// [0,1] φ
+                float ySegment = (float)y / (float)Y_SEGMENTS;// [0,1] θ
+
+                // 球体半径为1
+                // xSegment * 2.0f * PI 是弧度值，代表的是一个角度
+                // 半径已知，弧度选定之后，球面上的点就选定了，然后将弧度转换为笛卡尔坐标
+                float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);//
+                float yPos = std::cos(ySegment * PI);//
+                float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);//
 
                 positions.push_back(glm::vec3(xPos, yPos, zPos));
                 uv.push_back(glm::vec2(xSegment, ySegment));
@@ -381,6 +385,7 @@ void renderSphere()
         {
             if (!oddRow) // even rows: y == 0, y == 2; and so on
             {
+                // 偶数行
                 for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
                 {
                     indices.push_back(y       * (X_SEGMENTS + 1) + x);
@@ -389,6 +394,7 @@ void renderSphere()
             }
             else
             {
+                // 奇数行
                 for (int x = X_SEGMENTS; x >= 0; --x)
                 {
                     indices.push_back((y + 1) * (X_SEGMENTS + 1) + x);
@@ -423,12 +429,9 @@ void renderSphere()
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
         unsigned int stride = (3 + 2 + 3) * sizeof(float);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
-        glEnableVertexAttribArray(1);        
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
-        glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));        
+        glEnableVertexAttribArray(0);glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+        glEnableVertexAttribArray(1);glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(2);glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
     }
 
     glBindVertexArray(sphereVAO);

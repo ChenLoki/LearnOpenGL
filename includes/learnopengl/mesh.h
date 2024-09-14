@@ -16,6 +16,13 @@ using namespace std;
 
 #define MAX_BONE_INFLUENCE 4
 
+// mesh是渲染实体，包含渲染需要的
+// 1、attribute数据
+// 2、indices数据
+// 3、texture数据
+
+// 顶点数据就是vertex shader中的attribute
+
 struct Vertex
 {
 	glm::vec3 Position;
@@ -24,7 +31,7 @@ struct Vertex
 	glm::vec3 Tangent;
 	glm::vec3 Bitangent;
 
-	int m_BoneIDs[MAX_BONE_INFLUENCE];
+	int   m_BoneIDs[MAX_BONE_INFLUENCE];
 	float m_Weights[MAX_BONE_INFLUENCE];
 };
 
@@ -41,9 +48,12 @@ public:
 	vector<Vertex>       vertices;
 	vector<unsigned int> indices;
 	vector<Texture>      textures;
+
 	unsigned int VAO;// 一个mesh的VAO是唯一的
 
-	Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures)
+	Mesh(vector<Vertex>			vertices,
+		 vector<unsigned int>	indices,
+		 vector<Texture>		textures)
 	{
 		this->vertices = vertices;
 		this->indices  = indices;
@@ -96,20 +106,21 @@ private:
 
 		glBindVertexArray(VAO);
         {
-            // 对应drawArray
             glBindBuffer(GL_ARRAY_BUFFER, VBO);
             glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
             
-            // 对应drawElement
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
             
-            // 开启shader中的location锚点，这些数据存在于VBO中
             glEnableVertexAttribArray(0);glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Position));
             glEnableVertexAttribArray(1);glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
             glEnableVertexAttribArray(2);glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
             glEnableVertexAttribArray(3);glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
             glEnableVertexAttribArray(4);glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+
+			glEnableVertexAttribArray(5);glVertexAttribPointer(5, 4, GL_INT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_BoneIDs));
+			glEnableVertexAttribArray(6);glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_Weights));
+
         }
 		glBindVertexArray(0);
 	}

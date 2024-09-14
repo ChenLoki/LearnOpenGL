@@ -16,9 +16,9 @@
 // IBL diffuse
 // 原理是将着色点shader point上的漫反射光做了预计算，渲染的时候直接采样
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void framebuffer_size_callback( GLFWwindow* window, int width, int height);
+void mouse_callback(            GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(           GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 void renderSphere();
 void renderCube();
@@ -61,9 +61,9 @@ int main()
         glfwTerminate();
         return -1;
     }
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetScrollCallback(window, scroll_callback);
+    glfwSetFramebufferSizeCallback( window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(       window, mouse_callback);
+    glfwSetScrollCallback(          window, scroll_callback);
 
     // tell GLFW to capture our mouse
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -83,14 +83,14 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader pbrShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.1.2.ibl_irradiance/2.1.2.pbr.vert",
-        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.1.2.ibl_irradiance/2.1.2.pbr.frag");
+    Shader pbrShader( "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.1.2.ibl_irradiance/2.1.2.pbr.vert",
+                    "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.1.2.ibl_irradiance/2.1.2.pbr.frag");
     Shader equirectangularToCubemapShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.1.2.ibl_irradiance/2.1.2.cubemap.vert",
-        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.1.2.ibl_irradiance/2.1.2.equirectangular_to_cubemap.frag");
-    Shader irradianceShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.1.2.ibl_irradiance/2.1.2.cubemap.vert",
-        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.1.2.ibl_irradiance/2.1.2.irradiance_convolution.frag");
-    Shader backgroundShader("/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.1.2.ibl_irradiance/2.1.2.background.vert",
-        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.1.2.ibl_irradiance/2.1.2.background.frag");
+                                        "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.1.2.ibl_irradiance/2.1.2.equirectangular_to_cubemap.frag");
+    Shader irradianceShader(  "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.1.2.ibl_irradiance/2.1.2.cubemap.vert",
+                            "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.1.2.ibl_irradiance/2.1.2.irradiance_convolution.frag");
+    Shader backgroundShader(  "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.1.2.ibl_irradiance/2.1.2.background.vert",
+                            "/Users/chen/Documents/LearnOpenGL/src/6.pbr/2.1.2.ibl_irradiance/2.1.2.background.frag");
 
 
     pbrShader.use();
@@ -105,18 +105,22 @@ int main()
 
     // lights
     // ------
-    glm::vec3 lightPositions[] = {
+    glm::vec3 lightPositions[] =
+    {
         glm::vec3(-10.0f,  10.0f, 10.0f),
         glm::vec3( 10.0f,  10.0f, 10.0f),
         glm::vec3(-10.0f, -10.0f, 10.0f),
         glm::vec3( 10.0f, -10.0f, 10.0f),
     };
-    glm::vec3 lightColors[] = {
+
+    glm::vec3 lightColors[] =
+    {
         glm::vec3(300.0f, 300.0f, 300.0f),
         glm::vec3(300.0f, 300.0f, 300.0f),
         glm::vec3(300.0f, 300.0f, 300.0f),
         glm::vec3(300.0f, 300.0f, 300.0f)
     };
+
     int nrRows = 7;
     int nrColumns = 7;
     float spacing = 2.5;

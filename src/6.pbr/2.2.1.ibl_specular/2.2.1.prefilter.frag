@@ -6,6 +6,7 @@ uniform samplerCube environmentMap;
 uniform float roughness;
 
 const float PI = 3.14159265359;
+
 // ----------------------------------------------------------------------------
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
@@ -20,6 +21,7 @@ float DistributionGGX(vec3 N, vec3 H, float roughness)
 
     return nom / denom;
 }
+
 // ----------------------------------------------------------------------------
 // http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html
 // efficient VanDerCorpus calculation.
@@ -37,13 +39,17 @@ vec2 Hammersley(uint i, uint N)
 {
 	return vec2(float(i)/float(N), RadicalInverse_VdC(i));
 }
+
 // ----------------------------------------------------------------------------
+// xi就是ξ，在[0,1]上分布的随机变量，这里是二维的
+
 vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness)
 {
 	float a = roughness*roughness;
-	
-	float phi = 2.0 * PI * Xi.x;
-	float cosTheta = sqrt((1.0 - Xi.y) / (1.0 + (a*a - 1.0) * Xi.y));
+
+    // 这样取到的随机变量的方向是符合NDF法线分布函数的
+	float phi = 2.0 * PI * Xi.x;// φ方向是均匀分布的
+	float cosTheta = sqrt((1.0 - Xi.y) / (1.0 + (a*a - 1.0) * Xi.y));// θ方向需要取低差异序列随机数
 	float sinTheta = sqrt(1.0 - cosTheta*cosTheta);
 	
 	// from spherical coordinates to cartesian coordinates - halfway vector
@@ -76,8 +82,15 @@ void main()
     for(uint i = 0u; i < SAMPLE_COUNT; ++i)
     {
         // generates a sample vector that's biased towards the preferred alignment direction (importance sampling).
+        // Xi.x是在[0,1]上均分分布的
+        // Xi.y是一个[0,1]上的低差异随机序列
         vec2 Xi = Hammersley(i, SAMPLE_COUNT);
-        vec3 H = ImportanceSampleGGX(Xi, N, roughness);
+
+        // ImportanceSampleGGX函数的返回值就是微表面的法线方向，也就是半程向量的方向
+        vec3 H  = ImportanceSampleGGX(Xi, N, roughness);
+
+        // 根据半程向量H方向，视角V方向计算入射光方向L
+        // 这里才真正得到采样的入射光方向
         vec3 L  = normalize(2.0 * dot(V, H) * H - V);
 
         float NdotL = max(dot(N, L), 0.0);

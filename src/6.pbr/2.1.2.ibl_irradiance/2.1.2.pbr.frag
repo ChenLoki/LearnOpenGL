@@ -114,7 +114,7 @@ void main()
     vec3 kS = fresnelSchlick(max(dot(N, V), 0.0), F0);
     vec3 kD = 1.0 - kS;
     kD *= 1.0 - metallic;	  
-    vec3 irradiance = texture(irradianceMap, N).rgb;
+    vec3 irradiance = texture(irradianceMap, N).rgb;// 法线方向采样环境光贴图
     vec3 diffuse      = irradiance * albedo;// 这里diffus是radiance值，是与观察方向无关的，diffuse材质的作用是将dA上搜集到的irradiance向半球面上各个方向均匀散射
     vec3 ambient = (kD * diffuse) * ao;
     // vec3 ambient = vec3(0.002);

@@ -22,7 +22,7 @@ const float PI = 3.14159265359;
 //uniform sampler2D texture_normal1;
 
 // ----------------------------------------------------------------------------
-float DistributionGGX(vec3 N, vec3 H, float roughness)
+float DistributionGGX(vec3 H, vec3 N, float roughness)
 {
     float a = roughness*roughness;
     float a2 = a*a;
@@ -74,7 +74,7 @@ void main()
     // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 
     // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)    
     vec3 F0 = vec3(0.04); 
-    F0 = mix(F0, albedo, metallic);
+    F0 = mix(F0, albedo, metallic);// F0 + (albedo - F0)*metallic
 
     // reflectance equation
     vec3 Lo = vec3(0.0);
@@ -84,14 +84,14 @@ void main()
         // calculate per-light radiance
         vec3 L = normalize(lightPositions[i] - WorldPos);
         vec3 H = normalize(V + L);
-        float distance = length(lightPositions[i] - WorldPos);
-        float attenuation = 1.0 / (distance * distance);// 光源强度的衰减其实是来自于光源在单位半球面上的立体角的投影
-        vec3 radiance = lightColors[i] * attenuation;
+        float distance      = length(lightPositions[i] - WorldPos);
+        float attenuation   = 1.0 / (distance * distance);// 光源强度的衰减其实是来自于光源在单位半球面上的立体角的投影
+        vec3 radiance       = lightColors[i] * attenuation;
 
         // Cook-Torrance BRDF
-        float NDF = DistributionGGX(N, H, roughness); // 法线方向 和 半程向量方向
+        float NDF = DistributionGGX(H, N , roughness); // 法线方向 和 半程向量方向
         float G   = GeometrySmith(N, V, L, roughness);// 法线方向 和 视角方向  光线方向
-        vec3 F    = fresnelSchlick(clamp(dot(H, V), 0.0, 1.0), F0);// 视角方向 和 半程向量方向
+        vec3  F   = fresnelSchlick(clamp(dot(H, V), 0.0, 1.0), F0);// 视角方向 和 半程向量方向
            
         vec3 numerator    = NDF * G * F; 
         float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001; // + 0.0001 to prevent divide by zero
@@ -136,7 +136,7 @@ void main()
     // gamma correct
     color = pow(color, vec3(1.0/2.2)); 
 
-//    FragColor = vec4(color, 1.0);
-
     FragColor = vec4(fr, 1.0);
+
+//    FragColor = vec4(fr, 1.0);
 }

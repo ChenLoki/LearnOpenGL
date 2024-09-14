@@ -38,7 +38,7 @@ vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness)
 	// from tangent-space H vector to world-space sample vector
 	vec3 up          = abs(N.z) < 0.999 ? vec3(0.0, 0.0, 1.0) : vec3(1.0, 0.0, 0.0);
 	vec3 tangent   = normalize(cross(up, N));
-	vec3 bitangent = cross(N, tangent);
+	vec3 bitangent = cross(N, tangent);// normalize(cross(N, tangent))
 	
 	vec3 sampleVec = tangent * H.x + bitangent * H.y + N * H.z;
 	return normalize(sampleVec);
@@ -83,9 +83,10 @@ vec2 IntegrateBRDF(float NdotV, float roughness)
     {
         // generates a sample vector that's biased towards the
         // preferred alignment direction (importance sampling).
-        vec2 Xi = Hammersley(i, SAMPLE_COUNT);
-        vec3 H = ImportanceSampleGGX(Xi, N, roughness);
-        vec3 L = normalize(2.0 * dot(V, H) * H - V);
+        // 生成一个基于选定方向的采样方向
+        vec2 Xi = Hammersley(i, SAMPLE_COUNT);// 生成一个随机角(phi,theta)
+        vec3 H  = ImportanceSampleGGX(Xi, N, roughness);// 根据(phi,theta)，生成随机方向向量，并转换到世界空间
+        vec3 L  = normalize(2.0 * dot(V, H) * H - V);
 
         float NdotL = max(L.z, 0.0);
         float NdotH = max(H.z, 0.0);

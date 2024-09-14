@@ -15,7 +15,7 @@ void main()
     // is the radiance of light coming from -Normal direction, which is what
     // we use in the PBR shader to sample irradiance.
 
-    // WorldPos是球体局部坐标空间上的点的坐标
+    // WorldPos是世界空间的方向，也是切线空间的法线
     vec3 N = normalize(WorldPos);
 
     vec3 irradiance = vec3(0.0);   
@@ -33,7 +33,7 @@ void main()
         for(float theta = 0.0; theta < 0.5 * PI; theta += sampleDelta)
         {
             // spherical to cartesian (in tangent space)
-            // 球面坐标转换为笛卡尔坐标
+            // 切线空间生成一系列的半球面采样方向
             vec3 tangentSample = vec3(sin(theta) * cos(phi),  sin(theta) * sin(phi), cos(theta));
             
             // tangent space to world

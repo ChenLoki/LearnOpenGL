@@ -22,12 +22,12 @@ using namespace std;
 unsigned int TextureFromFile(const char *path, const string &directory, bool gamma = false);
 
 //Model类
-// 相当于
+// 就是一个Child node
 class Model
 {
 public:
-    vector<Texture> textures_loaded;// 保存一个model的所有的texture
-    vector<Mesh> meshes;// 每个mesh都有自己的Texture集合
+    vector<Texture> textures_loaded;// 多个不同的mesh可能会读取相同的texture，这里在model里面统一管理
+    vector<Mesh> meshes;
     string directory;
     bool gammaCorrection;
 
@@ -68,9 +68,9 @@ private:
     /// 解析model中所有的mesh
     void processNode(aiNode *node, const aiScene *scene)
     {
-        // 叶子节点：如果本节点有网格mesh，解析每一个mesh
         for (unsigned int i = 0; i < node->mNumMeshes; i++)
         {
+            // 通过node中保存的mesh索引，在scene中获取到mesh实体
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 //            auto name = mesh->mName;
             meshes.push_back(processMesh(mesh, scene));
@@ -85,6 +85,8 @@ private:
 
     // 解析一个mesh最后得到VBO EBO texture
     // 解析mesh就是解析obj，副切线与切线是assimp计算得到的
+
+    // 这里传入的aiMesh是一个包含实际数据的mesh实体，不是mesh索引
     Mesh processMesh(aiMesh *mesh, const aiScene *scene)
     {
         // 要填写的数据
@@ -153,8 +155,8 @@ private:
                 indices.push_back(face.mIndices[j]);
         }
 
-        // 每个网格都对应一个材质
-        /// 有没有可能一个网格对应多个材质？
+        // 一个model可能有多个mesh构成，但是每个mesh只有一个材质
+        // 渲染mesh的时候，只使用这个材质绘制mesh
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
         // 我们假设着色器中的采样器名称约定。 每个漫反射纹理应命名为'texture_diffuseN'，其中N是从1到MAX_SAMPLER_NUMBER的序列号。
@@ -164,25 +166,24 @@ private:
         // normal: texture_normalN
 
         // 一个材质可能会包含多张纹理
-        /// 将所有纹理按类型整理并添加
         // 1. duffuse
         vector<Texture> diffuseMaps;
-        loadMaterialTextures(diffuseMaps,material, aiTextureType_DIFFUSE, "texture_diffuse");
+        loadMaterialTextures(diffuseMaps , material, aiTextureType_DIFFUSE, "texture_diffuse");
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
         // 2. spec
         vector<Texture> specularMaps;
-        loadMaterialTextures(specularMaps,material, aiTextureType_SPECULAR, "texture_specular");
+        loadMaterialTextures(specularMaps , material, aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
         // 3.normal
         std::vector<Texture> normalMaps;
-        loadMaterialTextures(normalMaps,material, aiTextureType_HEIGHT, "texture_normal");
+        loadMaterialTextures(normalMaps , material, aiTextureType_HEIGHT, "texture_normal");
         textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
         // 4. height
         std::vector<Texture> heightMaps;
-        loadMaterialTextures(heightMaps,material, aiTextureType_AMBIENT, "texture_height");
+        loadMaterialTextures(heightMaps , material, aiTextureType_AMBIENT, "texture_height");
         textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
         return Mesh(vertices, indices, textures);
@@ -190,7 +191,7 @@ private:
 
     void loadMaterialTextures(vector<Texture>& textures , aiMaterial *mat, aiTextureType type, string typeName)
     {
-//		vector<Texture> textures;
+        // 遍历一个材质中的所有纹理
         for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
         {
             aiString str;

@@ -92,7 +92,7 @@ void main()
     // reflectance equation
     vec3 Lo = vec3(0.0);
     vec3 fr = vec3(0.0);
-    for(int i = 0; i < 4; ++i)
+    for(int i = 0; i < 1; ++i)
     {
         // calculate per-light radiance
         vec3 L = normalize(lightPositions[i] - WorldPos);
@@ -132,7 +132,7 @@ void main()
         // 为什么这里不乘dw_i，因为光源都是点光源，dw可以认为是无限小，此时算作是单根光线的irradiance
         Lo += (kD * albedo / PI + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
 
-        fr = vec3(G,G,G);
+        fr = vec3(NDF,NDF,NDF);
     }
     
     // ambient lighting (note that the next IBL tutorial will replace 
@@ -141,7 +141,7 @@ void main()
 
     vec3 color = ambient + Lo;// 环境光可以通过全局光照正确计算
 
-    vec3 objColor = texture(texture_diffuse1, TexCoords).rgb;
+    vec3 objColor = pow(texture(texture_diffuse1, TexCoords).rgb, vec3(2.2));
     color *= objColor;
 
     // HDR tonemapping
@@ -149,7 +149,7 @@ void main()
     // gamma correct
     color = pow(color, vec3(1.0/2.2)); 
 
-//    FragColor = vec4(color, 1.0);
+    FragColor = vec4(color, 1.0);
 
-    FragColor = vec4(fr, 1.0);
+//    FragColor = vec4(fr, 1.0);
 }
