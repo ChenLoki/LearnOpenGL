@@ -32,8 +32,6 @@ public:
     std::vector<Mesh>    meshes;
     std::string directory;
     bool gammaCorrection;
-	
-	
 
     // constructor, expects a filepath to a 3D model.
     Model(std::string const &path, bool gamma = false) : gammaCorrection(gamma)
@@ -49,13 +47,13 @@ public:
     }
     
 	auto& GetBoneInfoMap() { return m_BoneInfoMap; }
-	int& GetBoneCount() { return m_BoneCounter; }
+	int&  GetBoneCount() { return m_BoneCounter; }
 	
 
 private:
 
-	std::map<std::string, BoneInfo> m_BoneInfoMap;
-	int m_BoneCounter = 0;
+	std::map<std::string, BoneInfo> m_BoneInfoMap;// 一个model里面包含的所有bone的信息
+	int m_BoneCounter = 0;// model里所有bone的数量
 
     // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
     void loadModel(std::string const &path)
@@ -74,6 +72,8 @@ private:
 
         // process ASSIMP's root node recursively
         processNode(scene->mRootNode, scene);
+
+    	auto count = m_BoneCounter;
     }
 
     // processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
@@ -105,6 +105,12 @@ private:
 	}
 
 
+	// 解析顶点着色器中，顶点需要的数据
+	// position
+	// normal
+	// UV
+	// boneIDs
+	// boneWeights
 	Mesh processMesh(aiMesh* mesh, const aiScene* scene)
 	{
 		vector<Vertex> vertices;
@@ -116,7 +122,7 @@ private:
 			Vertex vertex;
 			SetVertexBoneDataToDefault(vertex);
 			vertex.Position = AssimpGLMHelpers::GetGLMVec(mesh->mVertices[i]);
-			vertex.Normal = AssimpGLMHelpers::GetGLMVec(mesh->mNormals[i]);
+			vertex.Normal   = AssimpGLMHelpers::GetGLMVec(mesh->mNormals[i]);
 			
 			if (mesh->mTextureCoords[0])
 			{
@@ -138,51 +144,48 @@ private:
 		}
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-		std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-
+		std::vector<Texture> diffuseMaps  = loadMaterialTextures(material, aiTextureType_DIFFUSE,  "texture_diffuse");
     	std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+    	std::vector<Texture> normalMaps   = loadMaterialTextures(material, aiTextureType_HEIGHT,   "texture_normal");
+    	std::vector<Texture> heightMaps   = loadMaterialTextures(material, aiTextureType_AMBIENT,  "texture_height");
 
-    	std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
-		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+    	textures.insert(textures.end(), diffuseMaps.begin(),  diffuseMaps.end());
+    	textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+    	textures.insert(textures.end(), normalMaps.begin(),   normalMaps.end());
+		textures.insert(textures.end(), heightMaps.begin(),   heightMaps.end());
 
-    	std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
-		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
-
+    	// 解析每个mesh中的骨骼
+    	// 统计bone_count
+    	// 统计mesh中每个顶点相关的骨骼ID，及其权重
 		ExtractBoneWeightForVertices(vertices,mesh,scene);
 
 		return Mesh(vertices, indices, textures);
 	}
 
-	void SetVertexBoneData(Vertex& vertex, int boneID, float weight)
-	{
-		for (int i = 0; i < MAX_BONE_INFLUENCE; ++i)
-		{
-			if (vertex.m_BoneIDs[i] < 0)
-			{
-				vertex.m_Weights[i] = weight;
-				vertex.m_BoneIDs[i] = boneID;
-				break;
-			}
-		}
-	}
-
-
 	void ExtractBoneWeightForVertices(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene)
 	{
 		auto& boneInfoMap = m_BoneInfoMap;
-		int& boneCount = m_BoneCounter;
+		int&  boneCount   = m_BoneCounter;
 
+    	// mesh->mNumBones : The number of bones this mesh contains.
+    	/*
+    	 *	mOffsetMatrix 保存的是将Bone 变换到世界空间的矩阵的逆矩阵。
+    	 *	世界坐标系的点 经过这个矩阵的偏移 就变换到了骨骼坐标系中了。
+    	 *	骨骼动画是在骨骼坐标系中进行的。
+    	 */
+
+    	// 遍历一个mesh里包含的所有骨骼
 		for (int boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex)
 		{
+			// 将遍历到的骨骼信息注册到model的m_BoneInfoMap里，统一管理
 			int boneID = -1;
 			std::string boneName = mesh->mBones[boneIndex]->mName.C_Str();
 			if (boneInfoMap.find(boneName) == boneInfoMap.end())
 			{
 				BoneInfo newBoneInfo;
-				newBoneInfo.id = boneCount;
+				newBoneInfo.id     = boneCount;
 				newBoneInfo.offset = AssimpGLMHelpers::ConvertMatrixToGLMFormat(mesh->mBones[boneIndex]->mOffsetMatrix);
+
 				boneInfoMap[boneName] = newBoneInfo;
 				boneID = boneCount;
 				boneCount++;
@@ -191,20 +194,39 @@ private:
 			{
 				boneID = boneInfoMap[boneName].id;
 			}
+
 			assert(boneID != -1);
-			auto weights = mesh->mBones[boneIndex]->mWeights;
-			int numWeights = mesh->mBones[boneIndex]->mNumWeights;
+
+			// 解析这根骨骼影响的顶点
+			// 构建mesh中的能够影响顶点的bone，以及其权重
+			aiVertexWeight * weights = mesh->mBones[boneIndex]->mWeights;
+			int numWeights           = mesh->mBones[boneIndex]->mNumWeights;// 这个骨骼影响的顶点数
 
 			for (int weightIndex = 0; weightIndex < numWeights; ++weightIndex)
 			{
-				int vertexId = weights[weightIndex].mVertexId;
+				int vertexId = weights[weightIndex].mVertexId;// 顶点ID是具体的哪个顶点的索引，可以通过vertices[vertexId]得到具体的顶点
 				float weight = weights[weightIndex].mWeight;
+
 				assert(vertexId <= vertices.size());
+
 				SetVertexBoneData(vertices[vertexId], boneID, weight);
 			}
 		}
 	}
 
+	void SetVertexBoneData(Vertex& vertex, int boneID, float weight)
+    {
+    	// 只添加4根骨骼
+    	for (int i = 0; i < MAX_BONE_INFLUENCE; ++i)
+    	{
+    		if (vertex.m_BoneIDs[i] < 0)
+    		{
+    			vertex.m_Weights[i] = weight;
+    			vertex.m_BoneIDs[i] = boneID;
+    			break;
+    		}
+    	}
+    }
 
 	unsigned int TextureFromFile(const char* path, const string& directory, bool gamma = false)
 	{

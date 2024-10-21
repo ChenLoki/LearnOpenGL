@@ -290,9 +290,11 @@ int main()
     mLTC.mat2 = loadLUTTexture();
 
     // SHADERS
-    Shader shaderLTC("7.area_light.vs", "7.area_light.fs");
+    Shader shaderLTC("/Users/chen/Documents/LearnOpenGL/src/8.guest/2022/7.area_lights/1.area_light/7.area_light.vs",
+    	"/Users/chen/Documents/LearnOpenGL/src/8.guest/2022/7.area_lights/1.area_light/7.area_light.fs");
     ltcShaderPtr = &shaderLTC;
-    Shader shaderLightPlane("7.light_plane.vs", "7.light_plane.fs");
+    Shader shaderLightPlane("/Users/chen/Documents/LearnOpenGL/src/8.guest/2022/7.area_lights/1.area_light/7.light_plane.vs",
+    	"/Users/chen/Documents/LearnOpenGL/src/8.guest/2022/7.area_lights/1.area_light/7.light_plane.fs");
 
     // TEXTURES
     unsigned int concreteTexture = loadTexture(

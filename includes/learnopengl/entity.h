@@ -161,11 +161,11 @@ struct BoundingVolume
 	bool isOnFrustum(const Frustum& camFrustum) const
 	{
 		return (isOnOrForwardPlane(camFrustum.leftFace) &&
-			isOnOrForwardPlane(camFrustum.rightFace) &&
-			isOnOrForwardPlane(camFrustum.topFace) &&
-			isOnOrForwardPlane(camFrustum.bottomFace) &&
-			isOnOrForwardPlane(camFrustum.nearFace) &&
-			isOnOrForwardPlane(camFrustum.farFace));
+				isOnOrForwardPlane(camFrustum.rightFace) &&
+				isOnOrForwardPlane(camFrustum.topFace) &&
+				isOnOrForwardPlane(camFrustum.bottomFace) &&
+				isOnOrForwardPlane(camFrustum.nearFace) &&
+				isOnOrForwardPlane(camFrustum.farFace));
 	};
 };
 
@@ -199,11 +199,11 @@ struct Sphere : public BoundingVolume
 
 		//Check Firstly the result that have the most chance to failure to avoid to call all functions.
 		return (globalSphere.isOnOrForwardPlane(camFrustum.leftFace) &&
-			globalSphere.isOnOrForwardPlane(camFrustum.rightFace) &&
-			globalSphere.isOnOrForwardPlane(camFrustum.farFace) &&
-			globalSphere.isOnOrForwardPlane(camFrustum.nearFace) &&
-			globalSphere.isOnOrForwardPlane(camFrustum.topFace) &&
-			globalSphere.isOnOrForwardPlane(camFrustum.bottomFace));
+				globalSphere.isOnOrForwardPlane(camFrustum.rightFace) &&
+				globalSphere.isOnOrForwardPlane(camFrustum.farFace) &&
+				globalSphere.isOnOrForwardPlane(camFrustum.nearFace) &&
+				globalSphere.isOnOrForwardPlane(camFrustum.topFace) &&
+				globalSphere.isOnOrForwardPlane(camFrustum.bottomFace));
 	};
 };
 

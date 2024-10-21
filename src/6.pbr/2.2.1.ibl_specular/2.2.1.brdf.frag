@@ -85,7 +85,7 @@ vec2 IntegrateBRDF(float NdotV, float roughness)
         // preferred alignment direction (importance sampling).
         // 生成一个基于选定方向的采样方向
         vec2 Xi = Hammersley(i, SAMPLE_COUNT);// 生成一个随机角(phi,theta)
-        vec3 H  = ImportanceSampleGGX(Xi, N, roughness);// 根据(phi,theta)，生成随机方向向量，并转换到世界空间
+        vec3 H  = ImportanceSampleGGX(Xi, N, roughness);// 根据(phi,theta)，生成随机半向量，并转换到世界空间
         vec3 L  = normalize(2.0 * dot(V, H) * H - V);
 
         float NdotL = max(L.z, 0.0);
